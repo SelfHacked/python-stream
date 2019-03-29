@@ -1,2 +1,5 @@
 [run]
 source = stream
+omit =
+    # s3
+    stream/s3.py
