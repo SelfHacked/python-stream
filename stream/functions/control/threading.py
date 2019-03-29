@@ -1,11 +1,15 @@
-import time
-from threading import Thread
-from typing import Iterator
+import time as _time
+import typing as _typing
+from threading import (
+    Thread as _Thread,
+)
 
-from stream.typing import T_co
+from stream.typing import (
+    T_co as _T_co,
+)
 
 
-class ThreadedPrefetchOneIterator(Iterator[T_co]):
+class ThreadedPrefetchOneIterator(_typing.Iterator[_T_co]):
     """
     Prefetch one record via multi-threading.
     """
@@ -15,7 +19,7 @@ class ThreadedPrefetchOneIterator(Iterator[T_co]):
 
         self.__next = None
         self.__stop_iteration = False
-        self.__thread: Thread = None
+        self.__thread: _Thread = None
         self.__prefetch()
 
     def __prefetch_task(self):
@@ -25,7 +29,7 @@ class ThreadedPrefetchOneIterator(Iterator[T_co]):
             self.__stop_iteration = True
 
     def __prefetch(self):
-        self.__thread = Thread(target=self.__prefetch_task)
+        self.__thread = _Thread(target=self.__prefetch_task)
         self.__thread.start()
 
     def __next__(self):
@@ -38,7 +42,7 @@ class ThreadedPrefetchOneIterator(Iterator[T_co]):
             self.__prefetch()
 
 
-class ThreadedPrefetchAllIterator(Iterator[T_co]):
+class ThreadedPrefetchAllIterator(_typing.Iterator[_T_co]):
     class Timeout(Exception):
         pass
 
@@ -63,23 +67,23 @@ class ThreadedPrefetchAllIterator(Iterator[T_co]):
         self.__stopped = True
 
     def __prefetch(self):
-        thread = Thread(target=self.__prefetch_task)
+        thread = _Thread(target=self.__prefetch_task)
         thread.start()
 
     def __check_timeout(self, start):
         if self.__timeout is None:
             return
-        if time.time() - start < self.__timeout:
+        if _time.time() - start < self.__timeout:
             return
         raise self.Timeout
 
     def __wait(self):
         if self.__sleep is None:
             return
-        time.sleep(self.__sleep)
+        _time.sleep(self.__sleep)
 
     def __next__(self):
-        start_timeout = time.time()
+        start_timeout = _time.time()
         while not self.__results:
             if self.__stopped:
                 raise StopIteration

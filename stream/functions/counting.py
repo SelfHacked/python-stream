@@ -1,10 +1,14 @@
-from typing import Callable, Iterable, Iterator
+import typing as _typing
 
-from stream.typing import T_co
-from .each import BaseOneToOneFunction
+from stream.typing import (
+    T_co as _T_co,
+)
+from .each import (
+    BaseOneToOneFunction as _BaseOneToOneFunction,
+)
 
 
-class BaseReport(BaseOneToOneFunction[T_co, T_co]):
+class BaseReport(_BaseOneToOneFunction[_T_co, _T_co]):
     def __init__(self, *, interval=1000):
         self.__interval = interval
         self.__count = 0
@@ -21,12 +25,12 @@ class BaseReport(BaseOneToOneFunction[T_co, T_co]):
             self._interval_callback(self.__count)
         return item
 
-    def __call__(self, iterable: Iterable[T_co]) -> Iterator[T_co]:
+    def __call__(self, iterable: _typing.Iterable[_T_co]) -> _typing.Iterator[_T_co]:
         yield from super().__call__(iterable)
         self._finish_callback(self.__count)
 
 
-class report(BaseReport[T_co]):
+class report(BaseReport[_T_co]):
     """
     Report progress of an iterable
     """
@@ -39,8 +43,8 @@ class report(BaseReport[T_co]):
             self,
             *,
             interval=1000,
-            interval_callback: Callable[[int], None] = None,
-            finish_callback: Callable[[int], None] = None,
+            interval_callback: _typing.Callable[[int], None] = None,
+            finish_callback: _typing.Callable[[int], None] = None,
     ):
         super().__init__(interval=interval)
         self.__interval_callback = interval_callback or self.none
@@ -53,7 +57,7 @@ class report(BaseReport[T_co]):
         self.__finish_callback(n)
 
 
-class log(BaseReport[T_co]):
+class log(BaseReport[_T_co]):
     """
     Log progress of an iterable
     """
@@ -61,7 +65,7 @@ class log(BaseReport[T_co]):
     def __init__(
             self,
             *,
-            log_func: Callable[[str], None] = print,
+            log_func: _typing.Callable[[str], None] = print,
             name,
             interval=1000,
     ):

@@ -1,10 +1,12 @@
-from typing import Iterator, Iterable
+import typing as _typing
 
-from .typing import T_co
+from .typing import (
+    T_co as _T_co,
+)
 
 
-class Stream(Iterator[T_co]):
-    def __next__(self) -> T_co:
+class Stream(_typing.Iterator[_T_co]):
+    def __next__(self) -> _T_co:
         raise NotImplementedError  # pragma: no cover
 
     def __or__(self, other) -> 'Stream':
@@ -29,23 +31,23 @@ class Stream(Iterator[T_co]):
             pass
 
 
-class BaseIterStream(Stream[T_co]):
+class BaseIterStream(Stream[_T_co]):
     def __init__(self):
-        self.__iter: Iterator[T_co] = None
+        self.__iter: _typing.Iterator[_T_co] = None
 
-    def _iterable(self) -> Iterable[T_co]:
+    def _iterable(self) -> _typing.Iterable[_T_co]:
         raise NotImplementedError  # pragma: no cover
 
-    def __next__(self) -> T_co:
+    def __next__(self) -> _T_co:
         if self.__iter is None:
             self.__iter = iter(self._iterable())
         return next(self.__iter)
 
 
-class IterStream(BaseIterStream[T_co]):
-    def __init__(self, iterable: Iterable):
+class IterStream(BaseIterStream[_T_co]):
+    def __init__(self, iterable: _typing.Iterable):
         super().__init__()
         self.__iterable = iterable
 
-    def _iterable(self) -> Iterable[T_co]:
+    def _iterable(self) -> _typing.Iterable[_T_co]:
         return self.__iterable

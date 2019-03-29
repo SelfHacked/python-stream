@@ -1,15 +1,21 @@
-from typing import Iterable, Iterator
+import typing as _typing
 
-from stream.typing import Function
-from .each import apply_each
-from .filter import filter_
+from stream.typing import (
+    Function as _Function,
+)
+from .each import (
+    apply_each as _apply_each,
+)
+from .filter import (
+    filter_ as _filter,
+)
 
-strip: Function[str, str] = apply_each(str.strip)
+strip: _Function[str, str] = _apply_each(str.strip)
 
-remove_comments: filter_[str] = ~filter_(str.startswith, '#')
+remove_comments: _filter[str] = ~_filter(str.startswith, '#')
 
 
-def split_lines(iterable: Iterable[str]) -> Iterator[str]:
+def split_lines(iterable: _typing.Iterable[str]) -> _typing.Iterator[str]:
     """
     :param iterable: a series of strings, not necessarily split by lines
     :return: a series of strings split by lines

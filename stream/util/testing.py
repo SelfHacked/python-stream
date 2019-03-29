@@ -1,17 +1,21 @@
-from contextlib import contextmanager
-from time import time
+from contextlib import (
+    contextmanager as _contextmanager,
+)
+from time import (
+    time as _time,
+)
 
 
-@contextmanager
+@_contextmanager
 def assert_time(
         expected_time,
         *,
         margin=0.02,
 ):
-    start = time()
+    start = _time()
     try:
         yield
     finally:
-        t = time() - start
+        t = _time() - start
         print(t)
         assert -margin <= t - expected_time <= margin

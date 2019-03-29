@@ -1,17 +1,21 @@
-from io import SEEK_SET, SEEK_END
-from typing import Iterable, Iterator, BinaryIO, List
+import io as _io
+import typing as _typing
 
-from stream.functions.collections import yield_from
-from . import returns
+from stream.functions.collections import (
+    yield_from as _yield_from,
+)
+from . import (
+    returns as _returns,
+)
 
 
-class BytesIterableAsIO(BinaryIO):
+class BytesIterableAsIO(_typing.BinaryIO):
     NEWLINE = 10  # b'\n'
 
     ERROR = OSError
 
-    def __init__(self, iterable: Iterable[bytes]):
-        self.__iter = yield_from(iterable)
+    def __init__(self, iterable: _typing.Iterable[bytes]):
+        self.__iter = _yield_from(iterable)
         self.__pointer = 0
 
     # --- read ---
@@ -19,7 +23,7 @@ class BytesIterableAsIO(BinaryIO):
     def readable(self) -> bool:
         return True
 
-    @returns(bytes)
+    @_returns(bytes)
     def __read(self, *, n=None, line=False) -> bytes:
         i = 0
         while True:
@@ -45,7 +49,7 @@ class BytesIterableAsIO(BinaryIO):
             limit = None
         return self.__read(n=limit, line=True)
 
-    def __readlines(self, *, n=None) -> Iterable[bytes]:
+    def __readlines(self, *, n=None) -> _typing.Iterable[bytes]:
         i = 0
         while True:
             if n is not None and i >= n:
@@ -56,7 +60,7 @@ class BytesIterableAsIO(BinaryIO):
             yield line
             i += 1
 
-    def readlines(self, hint: int = -1) -> List[bytes]:
+    def readlines(self, hint: int = -1) -> _typing.List[bytes]:
         if hint == -1:
             hint = None
         return list(self.__readlines(n=hint))
@@ -64,7 +68,7 @@ class BytesIterableAsIO(BinaryIO):
     def __next__(self) -> bytes:
         return next(iter(self.__readlines(n=1)))
 
-    def __iter__(self) -> Iterator[bytes]:
+    def __iter__(self) -> _typing.Iterator[bytes]:
         return iter(self.__readlines())
 
     # --- seek ---
@@ -75,10 +79,10 @@ class BytesIterableAsIO(BinaryIO):
     def tell(self) -> int:
         return self.__pointer
 
-    def seek(self, offset: int, whence: int = SEEK_SET):
-        if whence == SEEK_END:
+    def seek(self, offset: int, whence: int = _io.SEEK_SET):
+        if whence == _io.SEEK_END:
             raise self.ERROR
-        if whence == SEEK_SET:
+        if whence == _io.SEEK_SET:
             if offset < self.__pointer:
                 raise self.ERROR
             offset = self.__pointer + offset
@@ -95,7 +99,7 @@ class BytesIterableAsIO(BinaryIO):
     def mode(self) -> str:
         return 'rb'
 
-    def __enter__(self) -> BinaryIO:
+    def __enter__(self) -> _typing.BinaryIO:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -126,7 +130,7 @@ class BytesIterableAsIO(BinaryIO):
     def write(self, s: bytes) -> None:
         raise self.ERROR
 
-    def writelines(self, lines: List[bytes]) -> None:
+    def writelines(self, lines: _typing.List[bytes]) -> None:
         raise self.ERROR
 
     def flush(self) -> None:

@@ -1,18 +1,22 @@
-from typing import Iterable, Iterator
+import typing as _typing
 
-from stream.typing import BaseParamFunction, T_co, V_co
+from stream.typing import (
+    BaseParamFunction as _BaseParamFunction,
+    T_co as _T_co,
+    V_co as _V_co,
+)
 
 
-class BaseOneToOneFunction(BaseParamFunction[T_co, V_co]):
+class BaseOneToOneFunction(_BaseParamFunction[_T_co, _V_co]):
     def _call(self, item):
         raise NotImplementedError  # pragma: no cover
 
-    def __call__(self, iterable: Iterable[T_co]) -> Iterator[V_co]:
+    def __call__(self, iterable: _typing.Iterable[_T_co]) -> _typing.Iterator[_V_co]:
         for item in iterable:
             yield self._call(item)
 
 
-class apply_each(BaseOneToOneFunction[T_co, V_co]):
+class apply_each(BaseOneToOneFunction[_T_co, _V_co]):
     """
     Apply `func` to all items in the iterable.
     `func` must take each item as the first argument, and then take *args, **kwargs

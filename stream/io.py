@@ -1,9 +1,12 @@
-from typing import Union
+import typing as _typing
 
-from . import Stream, BaseIterStream
+from . import (
+    Stream as _Stream,
+    BaseIterStream as _BaseIterStream,
+)
 
 
-class InputStream(Stream[str]):
+class InputStream(_Stream[str]):
     def __next__(self) -> str:
         try:
             return input()
@@ -11,7 +14,7 @@ class InputStream(Stream[str]):
             raise StopIteration
 
 
-class FileStream(BaseIterStream[Union[str, bytes]]):
+class FileStream(_BaseIterStream[_typing.Union[str, bytes]]):
     def __init__(self, name, *, binary=False):
         super().__init__()
         self.__name = name

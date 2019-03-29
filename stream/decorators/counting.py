@@ -1,16 +1,18 @@
-from typing import Callable
+import typing as _typing
 
 from stream.functions.counting import (
     report as _report,
     log as _log,
 )
-from . import from_function
+from . import (
+    from_function as _from_function,
+)
 
-report = from_function(_report, has_params=True)
+report = _from_function(_report, has_params=True)
 
 
 class log(object):
-    __self = from_function(_log, has_params=True)
+    __self = _from_function(_log, has_params=True)
 
     """
     Log progress of a generator
@@ -19,7 +21,7 @@ class log(object):
     def __init__(
             self,
             *,
-            log_func: Callable[[str], None] = print,
+            log_func: _typing.Callable[[str], None] = print,
             name=None,
             interval=1000,
     ):

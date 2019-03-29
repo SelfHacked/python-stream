@@ -1,14 +1,20 @@
-from typing import Union, Type, Iterable, Iterator
+import typing as _typing
 
-from stream.typing import BaseParamFunction, T_co
+from stream.typing import (
+    BaseParamFunction as _BaseParamFunction,
+    T_co as _T_co,
+)
 
 
-class preload(BaseParamFunction[T_co, T_co]):
+class preload(_BaseParamFunction[_T_co, _T_co]):
     def __init__(
             self,
             *,
             n: int = 1,
-            not_enough_error: Union[bool, Type[Exception]] = False,
+            not_enough_error: _typing.Union[
+                bool,
+                _typing.Type[Exception],
+            ] = False,
     ):
         """
         :param n: Number of entries to preload.
@@ -20,7 +26,7 @@ class preload(BaseParamFunction[T_co, T_co]):
         self.__n = n
         self.__error = not_enough_error
 
-    def __call__(self, iterable: Iterable[T_co]) -> Iterator[T_co]:
+    def __call__(self, iterable: _typing.Iterable[_T_co]) -> _typing.Iterator[_T_co]:
         iterator = iter(iterable)
         preloaded = []
 
@@ -42,6 +48,6 @@ class preload(BaseParamFunction[T_co, T_co]):
         return __generator()
 
 
-def preload_all(iterable: Iterable[T_co]) -> Iterator[T_co]:
+def preload_all(iterable: _typing.Iterable[_T_co]) -> _typing.Iterator[_T_co]:
     preloaded = tuple(iterable)
     return iter(preloaded)
