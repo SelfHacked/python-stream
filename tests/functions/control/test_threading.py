@@ -2,7 +2,7 @@ from time import sleep
 
 import pytest
 
-from stream.functions.threading import ThreadedPrefetchOneIterator, ThreadedPrefetchAllIterator
+from stream.functions.control.threading import ThreadedPrefetchOneIterator, ThreadedPrefetchAllIterator
 from stream.util.testing import assert_time
 
 
