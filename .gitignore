@@ -1,0 +1,27 @@
+# IDE
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Venv
+venv/
+.venv/
+
+# Pipenv
+# We use setup.py to specify dependencies
+Pipfile
+Pipfile.lock
+
+# Pip
+dist/
+*.egg-info/
+
+# PyTest
+.eggs/
+.pytest_cache/
+.coverage
+
+# Mac
+.DS_Store
