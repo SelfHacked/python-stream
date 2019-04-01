@@ -15,7 +15,7 @@ from stream.typing import (
 )
 
 
-class prefetch(_BaseParamFunction[_T_co, _T_co]):
+class Prefetch(_BaseParamFunction[_T_co, _T_co]):
     """
     Utilize multi-threading to prefetch items in the iterable.
     Useful when both the `next` call and the subsequent processing are time-consuming.

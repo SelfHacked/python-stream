@@ -8,10 +8,10 @@ from stream.util.io import (
     BytesIterableAsIO as _BytesIO,
 )
 from .each import (
-    apply_each as _apply_each,
+    ApplyEach as _ApplyEach,
 )
 
-decode: _Function[bytes, str] = _apply_each(bytes.decode, encoding='utf-8')
+decode: _Function[bytes, str] = _ApplyEach(bytes.decode, encoding='utf-8')
 
 
 def un_gzip(iterable: _typing.Iterable[bytes]) -> _typing.Iterator[str]:

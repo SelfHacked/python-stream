@@ -2,7 +2,7 @@ from time import sleep
 
 import pytest
 
-from stream.functions.control.threading import prefetch
+from stream.functions.control.threading import Prefetch
 from stream.util.testing import assert_time
 
 
@@ -29,17 +29,17 @@ def _test_prefetch(prefetch):
 
 
 def test_prefetch_one():
-    _test_prefetch(prefetch())
+    _test_prefetch(Prefetch())
 
 
 def test_prefetch_all():
-    _test_prefetch(prefetch(n=None))
+    _test_prefetch(Prefetch(n=None))
 
 
 def test_timeout():
-    iterator = prefetch(n=None, timeout=1)(dummy_iterable())
+    iterator = Prefetch(n=None, timeout=1)(dummy_iterable())
     tuple(iterator)
 
-    iterator = prefetch(n=None, timeout=0)(dummy_iterable())
-    with pytest.raises(prefetch.Timeout):
+    iterator = Prefetch(n=None, timeout=0)(dummy_iterable())
+    with pytest.raises(Prefetch.Timeout):
         next(iterator)

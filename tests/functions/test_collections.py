@@ -1,4 +1,4 @@
-from stream.functions.collections import yield_from, getitem
+from stream.functions.collections import yield_from, GetItem
 
 
 def test_yield_from():
@@ -6,5 +6,5 @@ def test_yield_from():
 
 
 def test_getitem():
-    get_1 = getitem(1)
+    get_1 = GetItem(1)
     assert tuple(get_1(('123', '45', 'abc'))) == ('2', '5', 'b')

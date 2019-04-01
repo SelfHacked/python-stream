@@ -30,7 +30,7 @@ class BaseReport(_BaseOneToOneFunction[_T_co, _T_co]):
         self._finish_callback(self.__count)
 
 
-class report(BaseReport[_T_co]):
+class Report(BaseReport[_T_co]):
     """
     Report progress of an iterable
     """
@@ -57,7 +57,7 @@ class report(BaseReport[_T_co]):
         self.__finish_callback(n)
 
 
-class log(BaseReport[_T_co]):
+class Log(BaseReport[_T_co]):
     """
     Log progress of an iterable
     """

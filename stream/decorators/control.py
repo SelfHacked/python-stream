@@ -1,8 +1,8 @@
 from stream.functions.control import (
-    preload as _preload,
+    Preload as _Preload,
 )
 from . import (
     from_function as _from_function,
 )
 
-preload = _from_function(_preload, has_params=True)
+preload = _from_function(_Preload, has_params=True)

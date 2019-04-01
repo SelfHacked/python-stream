@@ -1,7 +1,7 @@
 import pytest
 
 from stream import Stream, IterStream
-from stream.functions.each import apply_each
+from stream.functions.each import ApplyEach
 from stream.functions.filter import remove_empty
 from stream.functions.strings import strip, remove_comments
 from stream.io import FileStream
@@ -27,7 +27,7 @@ def test_gt():
 def test_call():
     s = IterStream('abc')
     li = []
-    s2 = s | apply_each(li.append)
+    s2 = s | ApplyEach(li.append)
     s2()
     assert li == ['a', 'b', 'c']
 

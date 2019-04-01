@@ -16,7 +16,7 @@ class BaseOneToOneFunction(_BaseParamFunction[_T_co, _V_co]):
             yield self._call(item)
 
 
-class apply_each(BaseOneToOneFunction[_T_co, _V_co]):
+class ApplyEach(BaseOneToOneFunction[_T_co, _V_co]):
     """
     Apply `func` to all items in the iterable.
     `func` must take each item as the first argument, and then take *args, **kwargs

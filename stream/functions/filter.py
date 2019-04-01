@@ -17,16 +17,16 @@ class BaseFilter(_BaseParamFunction[_T_co, _T_co]):
             yield item
 
     def __invert__(self):
-        return filter_(lambda item: not self._match(item))
+        return Filter(lambda item: not self._match(item))
 
     def __and__(self, other: 'BaseFilter'):
-        return filter_(lambda item: self._match(item) and other._match(item))
+        return Filter(lambda item: self._match(item) and other._match(item))
 
     def __or__(self, other: 'BaseFilter'):
-        return filter_(lambda item: self._match(item) or other._match(item))
+        return Filter(lambda item: self._match(item) or other._match(item))
 
 
-class filter_(BaseFilter[_T_co]):
+class Filter(BaseFilter[_T_co]):
     """
     Check all items in the iterable, and yield only matches.
     """
@@ -40,4 +40,4 @@ class filter_(BaseFilter[_T_co]):
         return self.__match(item, *self.__args, **self.__kwargs)
 
 
-remove_empty = filter_(bool)
+remove_empty = Filter(bool)

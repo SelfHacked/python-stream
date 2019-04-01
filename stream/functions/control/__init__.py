@@ -6,7 +6,7 @@ from stream.typing import (
 )
 
 
-class preload(_BaseParamFunction[_T_co, _T_co]):
+class Preload(_BaseParamFunction[_T_co, _T_co]):
     """
     Preload a number of items in the beginning.
     """
