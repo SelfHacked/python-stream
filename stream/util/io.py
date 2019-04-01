@@ -4,7 +4,7 @@ import typing as _typing
 from stream.functions.collections import (
     yield_from as _yield_from,
 )
-from . import (
+from returns import (
     returns as _returns,
 )
 

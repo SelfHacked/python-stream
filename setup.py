@@ -25,6 +25,10 @@ setup(
 
     python_requires='>=3.6',
 
+    install_requires=[
+        'returns-decorator',
+    ],
+
     extras_require={
         's3': extra_s3,
 
