@@ -1,12 +1,12 @@
 import typing as _typing
 
 from stream.typing import (
-    BaseParamFunction as _BaseParamFunction,
+    Function as _Function,
     T_co as _T_co,
 )
 
 
-class BaseFilter(_BaseParamFunction[_T_co, _T_co]):
+class BaseFilter(_Function[_T_co, _T_co]):
     def _match(self, item) -> bool:
         raise NotImplementedError  # pragma: no cover
 

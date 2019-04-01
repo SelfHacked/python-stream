@@ -10,12 +10,12 @@ from threading import (
 from gimme_cached_property import cached_property
 
 from stream.typing import (
-    BaseParamFunction as _BaseParamFunction,
+    Function as _Function,
     T_co as _T_co,
 )
 
 
-class Prefetch(_BaseParamFunction[_T_co, _T_co]):
+class Prefetch(_Function[_T_co, _T_co]):
     """
     Utilize multi-threading to prefetch items in the iterable.
     Useful when both the `next` call and the subsequent processing are time-consuming.

@@ -1,13 +1,13 @@
 import typing as _typing
 
 from stream.typing import (
-    BaseParamFunction as _BaseParamFunction,
+    Function as _Function,
     T_co as _T_co,
     V_co as _V_co,
 )
 
 
-class BaseOneToOneFunction(_BaseParamFunction[_T_co, _V_co]):
+class BaseOneToOneFunction(_Function[_T_co, _V_co]):
     def _call(self, item):
         raise NotImplementedError  # pragma: no cover
 
