@@ -1,8 +1,5 @@
 import typing as _typing
 
-from stream.typing import (
-    Function as _Function,
-)
 from .each import (
     ApplyEach as _ApplyEach,
 )
@@ -10,7 +7,7 @@ from .filter import (
     Filter as _Filter,
 )
 
-strip: _Function[str, str] = _ApplyEach(str.strip)
+strip: _ApplyEach[str, str] = _ApplyEach(str.strip)
 
 remove_comments: _Filter[str] = ~_Filter(str.startswith, '#')
 
