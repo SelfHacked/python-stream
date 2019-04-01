@@ -1,92 +1,109 @@
-import time as _time
 import typing as _typing
+from queue import (
+    Queue as _Queue,
+    Empty as _Empty,
+)
 from threading import (
     Thread as _Thread,
 )
 
+from gimme_cached_property import cached_property
+
 from stream.typing import (
+    BaseParamFunction as _BaseParamFunction,
     T_co as _T_co,
 )
 
 
-class ThreadedPrefetchOneIterator(_typing.Iterator[_T_co]):
+class prefetch(_BaseParamFunction[_T_co, _T_co]):
     """
-    Prefetch one record via multi-threading.
+    Utilize multi-threading to prefetch items in the iterable.
+    Useful when both the `next` call and the subsequent processing are time-consuming.
     """
 
-    def __init__(self, iterable):
-        self.__iter = iter(iterable)
-
-        self.__next = None
-        self.__stop_iteration = False
-        self.__thread: _Thread = None
-        self.__prefetch()
-
-    def __prefetch_task(self):
-        try:
-            self.__next = next(self.__iter)
-        except StopIteration:
-            self.__stop_iteration = True
-
-    def __prefetch(self):
-        self.__thread = _Thread(target=self.__prefetch_task)
-        self.__thread.start()
-
-    def __next__(self):
-        self.__thread.join()
-        if self.__stop_iteration:
-            raise StopIteration
-        try:
-            return self.__next
-        finally:
-            self.__prefetch()
-
-
-class ThreadedPrefetchAllIterator(_typing.Iterator[_T_co]):
     class Timeout(Exception):
         pass
 
     def __init__(
             self,
-            iterable,
             *,
-            sleep=None,
-            timeout=None,
+            n: _typing.Optional[int] = 1,
+            timeout: float = None,
     ):
-        self.__iter = iter(iterable)
-        self.__sleep = sleep
+        """
+        :param n:
+            The desired number of items to prefetch.
+            The prefetch thread will keep pre-fetching
+            as long as the number of pre-fetched items is smaller than n.
+            If None, do not limit.
+        :param timeout:
+            The timeout for each `next` call, if the prefetch is empty.
+            If None, do not limit.
+        """
+        self.__n = n
         self.__timeout = timeout
 
-        self.__results = []
-        self.__stopped = False
-        self.__prefetch()
+    @property
+    def _n(self) -> _typing.Optional[int]:
+        return self.__n
 
-    def __prefetch_task(self):
-        for item in self.__iter:
-            self.__results.append(item)
-        self.__stopped = True
+    @property
+    def _timeout(self) -> _typing.Optional[float]:
+        return self.__timeout
 
-    def __prefetch(self):
-        thread = _Thread(target=self.__prefetch_task)
-        thread.start()
+    @property
+    def _maxsize(self) -> int:
+        if self._n is None:
+            return 0
+        return self._n
 
-    def __check_timeout(self, start):
-        if self.__timeout is None:
-            return
-        if _time.time() - start < self.__timeout:
-            return
-        raise self.Timeout
+    @cached_property
+    def iterator_class(self) -> _typing.Type[_typing.Iterator[_T_co]]:
+        prefetch = self
 
-    def __wait(self):
-        if self.__sleep is None:
-            return
-        _time.sleep(self.__sleep)
+        class ThreadedPrefetchIterator(_typing.Iterator[_T_co]):
+            def __init__(self, iterable: _typing.Iterable[_T_co]):
+                self.__iter = iter(iterable)
+                self.__queue = _Queue(maxsize=prefetch._maxsize)
+                self.__finished = False
 
-    def __next__(self):
-        start_timeout = _time.time()
-        while not self.__results:
-            if self.__stopped:
-                raise StopIteration
-            self.__check_timeout(start_timeout)
-            self.__wait()
-        return self.__results.pop(0)
+                self.__thread = self.thread_class()
+                self.__thread.start()
+
+            def _prefetch_one(self) -> None:
+                try:
+                    item = next(self.__iter)
+                except StopIteration:
+                    self.__finished = True
+                    raise
+                self.__queue.put(item)
+
+            @cached_property
+            def thread_class(self) -> _typing.Type[_Thread]:
+                iterator = self
+
+                class PrefetchThread(_Thread):
+                    def run(self) -> None:
+                        try:
+                            while True:
+                                iterator._prefetch_one()
+                        except StopIteration:
+                            pass
+
+                return PrefetchThread
+
+            def __next__(self) -> _T_co:
+                if self.__finished and self.__queue.empty():
+                    raise StopIteration
+
+                try:
+                    item = self.__queue.get(timeout=prefetch._timeout)
+                except _Empty:
+                    raise prefetch.Timeout from None
+                self.__queue.task_done()
+                return item
+
+        return ThreadedPrefetchIterator
+
+    def __call__(self, iterable: _typing.Iterable[_T_co]) -> _typing.Iterator[_T_co]:
+        return self.iterator_class(iterable)

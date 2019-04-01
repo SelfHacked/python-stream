@@ -11,6 +11,7 @@ extra_test = [
     'pytest-runner>=4',
     'pytest-cov>=2',
     'pytest-dependency @ https://github.com/SelfHacked/pytest-dependency/archive/master.zip',
+    'cached-property',
 ]
 extra_dev = extra_all + extra_test
 
@@ -27,6 +28,7 @@ setup(
 
     install_requires=[
         'returns-decorator',
+        'gimme-cached-property',
     ],
 
     extras_require={

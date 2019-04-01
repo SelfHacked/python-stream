@@ -7,17 +7,24 @@ from stream.typing import (
 
 
 class preload(_BaseParamFunction[_T_co, _T_co]):
+    """
+    Preload a number of items in the beginning.
+    """
+
     def __init__(
             self,
             *,
-            n: int = 1,
+            n: _typing.Optional[int] = 1,
             not_enough_error: _typing.Union[
                 bool,
                 _typing.Type[Exception],
             ] = False,
     ):
         """
-        :param n: Number of entries to preload.
+        :param n:
+            Number of entries to preload.
+            Default: 1.
+            If None, preload all items.
         :param not_enough_error:
             If False (default), simply yield all entries;
             If True, raise StopIteration;
@@ -27,6 +34,9 @@ class preload(_BaseParamFunction[_T_co, _T_co]):
         self.__error = not_enough_error
 
     def __call__(self, iterable: _typing.Iterable[_T_co]) -> _typing.Iterator[_T_co]:
+        if self.__n is None:
+            return self.__preload_all(iterable)
+
         iterator = iter(iterable)
         preloaded = []
 
@@ -47,7 +57,7 @@ class preload(_BaseParamFunction[_T_co, _T_co]):
 
         return __generator()
 
-
-def preload_all(iterable: _typing.Iterable[_T_co]) -> _typing.Iterator[_T_co]:
-    preloaded = tuple(iterable)
-    return iter(preloaded)
+    @staticmethod
+    def __preload_all(iterable: _typing.Iterable[_T_co]) -> _typing.Iterator[_T_co]:
+        preloaded = tuple(iterable)
+        return iter(preloaded)
