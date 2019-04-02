@@ -24,6 +24,9 @@ class File(_typing.IO[_typing.AnyStr]):
     class SameFile(ValueError):
         pass
 
+    def __eq__(self, other: 'File'):
+        raise NotImplementedError  # pragma: no cover
+
     def copy_to(self, other: 'File'):
         if self == other:
             raise self.SameFile
@@ -34,25 +37,25 @@ class File(_typing.IO[_typing.AnyStr]):
 
     @property
     def name(self) -> str:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @property
     def mode(self) -> str:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def fileno(self) -> int:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @property
     def isatty(self) -> bool:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def close(self) -> None:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @property
     def closed(self) -> bool:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     class Closed(ValueError):
         pass
@@ -68,16 +71,16 @@ class File(_typing.IO[_typing.AnyStr]):
     # --- seek ---
 
     def seekable(self) -> bool:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def tell(self) -> int:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def seek(self, offset: int, whence: int = _io.SEEK_SET) -> int:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def truncate(self, size: _typing.Optional[int] = None) -> int:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def _move_next_pos(self) -> None:
         """
@@ -88,7 +91,7 @@ class File(_typing.IO[_typing.AnyStr]):
     # --- read ---
 
     def readable(self) -> bool:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def _read_character(self) -> Character:
         """
@@ -177,7 +180,7 @@ class File(_typing.IO[_typing.AnyStr]):
     # --- write ---
 
     def writable(self) -> bool:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def write(self, s: _typing.AnyStr) -> None:
         """
@@ -185,7 +188,7 @@ class File(_typing.IO[_typing.AnyStr]):
 
         Raise OSError (self.NotSupported) for non-readable files.
         """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def writelines(self, lines: _typing.Iterable[_typing.AnyStr]) -> None:
         """
@@ -196,7 +199,7 @@ class File(_typing.IO[_typing.AnyStr]):
             self.write(line)
 
     def flush(self) -> None:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
 
 class TextFile(File[str], _typing.TextIO):
