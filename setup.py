@@ -49,10 +49,10 @@ setup(
 
     entry_points={
         'console_scripts': [
-            's3-upload=stream.s3:upload_cmd',
-            's3-download=stream.s3:download_cmd',
-            's3-get=stream.s3:get_cmd',
-            's3-copy=stream.s3:copy_cmd',
+            's3-upload=stream.io.s3:upload_cmd',
+            's3-download=stream.io.s3:download_cmd',
+            's3-get=stream.io.s3:get_cmd',
+            's3-copy=stream.io.s3:copy_cmd',
         ],
     },
 )

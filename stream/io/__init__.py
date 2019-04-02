@@ -1,0 +1,227 @@
+import io as _io
+import typing as _typing
+
+from gimme_cached_property import cached_property
+
+from stream import (
+    Stream as _Stream,
+    IterStream as _IterStream,
+)
+
+Character = _typing.TypeVar('Character', str, int)
+
+
+class File(_typing.IO[_typing.AnyStr]):
+    NotSupported = OSError
+    EOF = EOFError
+
+    @cached_property
+    def stream(self) -> _Stream[_typing.AnyStr]:
+        if not self.readable():
+            raise self.NotSupported
+        return _IterStream(self)
+
+    class SameFile(ValueError):
+        pass
+
+    def copy_to(self, other: 'File'):
+        if self == other:
+            raise self.SameFile
+
+        return self.stream > other.writelines
+
+    # --- os ---
+
+    @property
+    def name(self) -> str:
+        raise NotImplementedError
+
+    @property
+    def mode(self) -> str:
+        raise NotImplementedError
+
+    def fileno(self) -> int:
+        raise NotImplementedError
+
+    @property
+    def isatty(self) -> bool:
+        raise NotImplementedError
+
+    def close(self) -> None:
+        raise NotImplementedError
+
+    @property
+    def closed(self) -> bool:
+        raise NotImplementedError
+
+    class Closed(ValueError):
+        pass
+
+    def __enter__(self) -> _typing.IO[_typing.AnyStr]:
+        if self.closed:
+            raise self.Closed
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        self.close()
+
+    # --- seek ---
+
+    def seekable(self) -> bool:
+        raise NotImplementedError
+
+    def tell(self) -> int:
+        raise NotImplementedError
+
+    def seek(self, offset: int, whence: int = _io.SEEK_SET) -> int:
+        raise NotImplementedError
+
+    def truncate(self, size: _typing.Optional[int] = None) -> int:
+        raise NotImplementedError
+
+    def _move_next_pos(self) -> None:
+        """
+        Used by reading one character.
+        """
+        pass
+
+    # --- read ---
+
+    def readable(self) -> bool:
+        raise NotImplementedError
+
+    def _read_character(self) -> Character:
+        """
+        Subclasses:
+
+        Raise OSError (self.NotSupported) for non-readable files;
+        Return single character (str or bytes);
+        Raise EOFError (self.EOF) if finished.
+        """
+        raise NotImplementedError  # pragma: no cover
+
+    @property
+    def newline(self) -> Character:
+        raise NotImplementedError  # pragma: no cover
+
+    def _read_iter(
+            self,
+            *,
+            n: int = None,
+            line: bool = False,
+    ) -> _typing.Iterator[Character]:
+        i = 0
+        while True:
+            if n is not None and i >= n:
+                return
+            try:
+                b = self._read_character()
+            except self.EOF:
+                return
+            yield b
+            i += 1
+            self._move_next_pos()
+            if line and b == self.newline:
+                return
+
+    def _read(
+            self,
+            *,
+            n: int = None,
+            line: bool = False,
+    ) -> _typing.AnyStr:
+        """
+        Subclasses:
+
+        Use _read_iter to generate result.
+        Differs for str and bytes.
+        """
+        raise NotImplementedError  # pragma: no cover
+
+    def read(self, n: int = -1) -> _typing.AnyStr:
+        if n == -1:
+            n = None
+        return self._read(n=n, line=False)
+
+    def readline(self, limit: int = -1) -> _typing.AnyStr:
+        if limit == -1:
+            limit = None
+        return self._read(n=limit, line=True)
+
+    def _readlines(
+            self,
+            *,
+            n: int = None,
+    ) -> _typing.Iterator[_typing.AnyStr]:
+        i = 0
+        while True:
+            if n is not None and i >= n:
+                return
+            line = self.readline()
+            if not line:
+                return
+            yield line
+            i += 1
+
+    def readlines(self, hint: int = -1) -> _typing.List[_typing.AnyStr]:
+        if hint == -1:
+            hint = None
+        return list(self._readlines(n=hint))
+
+    def __next__(self) -> _typing.AnyStr:
+        return next(self._readlines(n=1))
+
+    def __iter__(self) -> _typing.Iterator[_typing.AnyStr]:
+        return self._readlines()
+
+    # --- write ---
+
+    def writable(self) -> bool:
+        raise NotImplementedError
+
+    def write(self, s: _typing.AnyStr) -> None:
+        """
+        Subclasses:
+
+        Raise OSError (self.NotSupported) for non-readable files.
+        """
+        raise NotImplementedError
+
+    def writelines(self, lines: _typing.Iterable[_typing.AnyStr]) -> None:
+        """
+        Write a sequence of lines.
+        Note: line separators are not added
+        """
+        for line in lines:
+            self.write(line)
+
+    def flush(self) -> None:
+        raise NotImplementedError
+
+
+class TextFile(File[str], _typing.TextIO):
+    @property
+    def newline(self) -> Character:
+        return '\n'
+
+    def _read(
+            self,
+            *,
+            n: int = None,
+            line: bool = False,
+    ) -> str:
+        return ''.join(self._read_iter(n=n, line=line))
+
+
+class BinaryFile(File[bytes], _typing.BinaryIO):
+    @property
+    def newline(self) -> Character:
+        return 10  # b'\n'
+
+    def _read(
+            self,
+            *,
+            n: int = None,
+            line: bool = False,
+    ) -> bytes:
+        return bytes(self._read_iter(n=n, line=line))

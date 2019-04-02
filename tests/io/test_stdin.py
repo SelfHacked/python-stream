@@ -1,4 +1,4 @@
-from stream.io import InputStream, FileStream
+from stream.io.stdin import InputStream
 
 
 def test_input_stream(monkeypatch):
@@ -13,12 +13,3 @@ def test_input_stream(monkeypatch):
     monkeypatch.setattr('builtins.input', input)
     s = InputStream()
     assert tuple(s) == ('abc', '123')
-
-
-def test_file_stream(tmpdir):
-    file = tmpdir / '0.txt'
-    file.write_text("""123
-abc
-""", encoding='utf-8')
-    s = FileStream(str(file))
-    assert tuple(s) == ('123\n', 'abc\n')

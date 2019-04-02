@@ -2,11 +2,11 @@ from io import SEEK_CUR
 
 import pytest
 
-from stream.util.io import BytesIterableAsIO
+from stream.io.iterable import IterableFile
 
 
-def get() -> BytesIterableAsIO:
-    return BytesIterableAsIO([b'123\n45\n\n6\n'])
+def get() -> IterableFile:
+    return IterableFile([b'123\n45\n\n6\n'])
 
 
 def test_readonly():
@@ -76,7 +76,7 @@ def test_seek_forward_only():
     f = get()
     with pytest.raises(OSError):
         f.seek(0, 2)
-    f.seek(2)
+    assert f.seek(2) == 2
     with pytest.raises(OSError):
         f.seek(0, 0)
     with pytest.raises(OSError):

@@ -2,4 +2,4 @@
 source = stream
 omit =
     # s3
-    stream/s3.py
+    stream/io/s3.py
