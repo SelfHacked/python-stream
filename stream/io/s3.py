@@ -145,7 +145,11 @@ class S3ReadFile(BaseS3File):
             self.__current_chunk = next(self._chunks)
 
     def _read_character(self) -> int:
-        self.__load_current_chunk()
+        try:
+            self.__load_current_chunk()
+        except StopIteration:
+            raise self.EOF from None
+
         try:
             return self.__current_chunk[0]
         finally:
@@ -160,7 +164,11 @@ class S3ReadFile(BaseS3File):
         if self.__lines:
             return super().readline(limit=limit)
 
-        self.__load_current_chunk()
+        try:
+            self.__load_current_chunk()
+        except StopIteration:
+            return b''
+
         try:
             return self.__current_chunk
         finally:
