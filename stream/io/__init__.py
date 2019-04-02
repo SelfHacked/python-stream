@@ -215,6 +215,28 @@ class TextFile(File[str], _typing.TextIO):
     ) -> str:
         return ''.join(self._read_iter(n=n, line=line))
 
+    # --- text io ---
+
+    @property
+    def buffer(self) -> 'BinaryFile':
+        raise NotImplementedError  # pragma: no cover
+
+    @property
+    def encoding(self) -> str:
+        raise NotImplementedError  # pragma: no cover
+
+    @property
+    def errors(self) -> _typing.Optional[str]:
+        raise NotImplementedError  # pragma: no cover
+
+    @property
+    def line_buffering(self) -> int:
+        raise NotImplementedError  # pragma: no cover
+
+    @property
+    def newlines(self) -> _typing.Union[str, _typing.Tuple[str, ...], None]:
+        raise NotImplementedError  # pragma: no cover
+
 
 class BinaryFile(File[bytes], _typing.BinaryIO):
     @property

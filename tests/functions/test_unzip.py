@@ -9,9 +9,8 @@ from stream.io.local import LocalFile
 @pytest.mark.dependency(
     scope='session',
     depends=[
-        'tests/io/test_local.py::test_file_stream',
+        'tests/io/test_base.py::test_stream',
         'tests/test_operators.py::test_or',
-        'tests/io/test_iterable.py::test_iter',
     ],
 )
 def test_un_gzip(tmpdir):

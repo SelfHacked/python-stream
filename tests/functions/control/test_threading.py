@@ -28,14 +28,29 @@ def _test_prefetch(prefetch):
         next(iterator)
 
 
+@pytest.mark.dependency(
+    depends=[
+        ('session', 'tests/util/test_testing.py::test_assert_time'),
+    ],
+)
 def test_prefetch_one():
     _test_prefetch(Prefetch())
 
 
+@pytest.mark.dependency(
+    depends=[
+        ('session', 'tests/util/test_testing.py::test_assert_time'),
+    ],
+)
 def test_prefetch_all():
     _test_prefetch(Prefetch(n=None))
 
 
+@pytest.mark.dependency(
+    depends=[
+        ('session', 'tests/util/test_testing.py::test_assert_time'),
+    ],
+)
 def test_timeout():
     iterator = Prefetch(n=None, timeout=1)(dummy_iterable())
     tuple(iterator)

@@ -7,6 +7,11 @@ abc
 """
 
 
+@pytest.mark.dependency(
+    depends=[
+        ('session', 'tests/io/test_base.py::test_with'),
+    ],
+)
 def test_copy_local(tmpdir):
     file = tmpdir / '0.txt'
     file.write_text(txt, encoding='utf-8')
@@ -19,6 +24,11 @@ def test_copy_local(tmpdir):
     assert file2.read_text(encoding='utf-8') == txt
 
 
+@pytest.mark.dependency(
+    depends=[
+        ('session', 'tests/io/test_base.py::test_with'),
+    ],
+)
 def test_same_file(tmpdir):
     file = tmpdir / '0.txt'
     file.write_text(txt, encoding='utf-8')
