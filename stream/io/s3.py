@@ -310,19 +310,26 @@ def upload_cmd():
     parser.add_argument('bucket')
     parser.add_argument('key')
     args = parser.parse_args()
+
     S3WriteFile(args.bucket, args.key).upload_from(args.file)
 
 
 def download_cmd():
     import argparse
+    from stream.io.local import LocalFile
     parser = argparse.ArgumentParser()
     parser.add_argument('bucket')
     parser.add_argument('key')
     parser.add_argument('file')
     args = parser.parse_args()
-    with open(args.file, 'wb') as f:
-        for chunk in S3ReadFile(args.bucket, args.key, lines=False):
-            f.write(chunk)
+
+    with S3ReadFile(
+            args.bucket,
+            args.key,
+            lines=False,
+    ) as f1:
+        with LocalFile(args.file, 'wb') as f2:
+            f1.copy_to(f2)
 
 
 def get_cmd():
@@ -335,26 +342,34 @@ def get_cmd():
     parser.add_argument('bucket')
     parser.add_argument('key')
     args = parser.parse_args()
-    for chunk in S3ReadFile(args.bucket, args.key, lines=False):
-        sys.stdout.buffer.write(chunk)
+
+    with S3ReadFile(
+            args.bucket,
+            args.key,
+            lines=False,
+    ) as f:
+        for chunk in f:
+            sys.stdout.buffer.write(chunk)
 
 
 def copy_cmd():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('from_bucket', metavar='from-default')
+    parser.add_argument('from_bucket', metavar='from-bucket')
     parser.add_argument('from_key', metavar='from-key')
     parser.add_argument('--to-bucket')
     parser.add_argument('--to-key')
     parser.add_argument('--tmpfile', action='store_true')
     args = parser.parse_args()
 
-    S3ReadFile(
-        args.from_bucket,
-        args.from_key,
-        lines=False,
-    ).copy_to(S3WriteFile(
-        args.to_bucket or args.from_bucket,
-        args.to_key or args.from_key,
-        tmpfile=args.tmpfile,
-    ))
+    with S3ReadFile(
+            args.from_bucket,
+            args.from_key,
+            lines=False,
+    ) as f:
+        with S3WriteFile(
+                args.to_bucket or args.from_bucket,
+                args.to_key or args.from_key,
+                tmpfile=args.tmpfile,
+        ) as f2:
+            f.copy_to(f2)

@@ -57,7 +57,7 @@ class File(_typing.IO[_typing.AnyStr]):
     class Closed(ValueError):
         pass
 
-    def __enter__(self) -> _typing.IO[_typing.AnyStr]:
+    def __enter__(self) -> 'File':
         if self.closed:
             raise self.Closed
         return self
