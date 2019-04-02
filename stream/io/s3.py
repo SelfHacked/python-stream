@@ -109,15 +109,15 @@ class S3ReadFile(BaseS3File):
         self.__closed = False
 
     @cached_property
-    def __body(self) -> _StreamingBody:
+    def _body(self) -> _StreamingBody:
         return self._obj.get()['Body']
 
     @cached_property
-    def __chunks(self) -> _typing.Iterator[bytes]:
+    def _chunks(self) -> _typing.Iterator[bytes]:
         if self.__lines:
-            yield from self.__body.iter_lines(chunk_size=self.__chunk_size)
+            yield from self._body.iter_lines(chunk_size=self.__chunk_size)
         else:
-            yield from self.__body.iter_chunks(chunk_size=self.__chunk_size)
+            yield from self._body.iter_chunks(chunk_size=self.__chunk_size)
 
     # --- os ---
 
@@ -127,7 +127,7 @@ class S3ReadFile(BaseS3File):
 
     def close(self) -> None:
         try:
-            self.__body.close()
+            self._body.close()
         finally:
             self.__closed = True
 
@@ -142,7 +142,7 @@ class S3ReadFile(BaseS3File):
 
     def __load_current_chunk(self):
         if not self.__current_chunk:
-            self.__current_chunk = next(self.__chunks)
+            self.__current_chunk = next(self._chunks)
 
     def _read_character(self) -> int:
         self.__load_current_chunk()
@@ -153,7 +153,7 @@ class S3ReadFile(BaseS3File):
 
     def read(self, n: int = -1) -> bytes:
         if n == -1:
-            return self.__body.read()
+            return self._body.read()
         return super().read(n=n)
 
     def readline(self, limit: int = -1) -> bytes:
