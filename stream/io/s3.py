@@ -218,10 +218,7 @@ class S3WriteFile(BaseS3File):
         self.__pending: _typing.BinaryIO = None
 
     def _upload_obj(self, obj: _typing.BinaryIO):
-        try:
-            self._obj.upload_fileobj(obj)
-        finally:
-            self.close()
+        self._obj.upload_fileobj(obj)
 
     def _check_direct_upload(self):
         if self.closed:
@@ -244,7 +241,10 @@ class S3WriteFile(BaseS3File):
         Directly upload from a file-like object
         """
         self._check_direct_upload()
-        self._upload_obj(file)
+        try:
+            self._upload_obj(file)
+        finally:
+            self.close()
 
     # --- os ---
 
@@ -253,7 +253,13 @@ class S3WriteFile(BaseS3File):
         return 'wb'
 
     def close(self) -> None:
-        self.flush()
+        if self.closed:
+            return
+        try:
+            if self.__pending is not None:
+                self.flush()
+        finally:
+            self.__closed = True
 
     @property
     def closed(self) -> bool:
