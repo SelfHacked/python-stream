@@ -2,7 +2,7 @@ from io import StringIO
 
 import pytest
 
-from stream.io.std import StdIn
+from stream.io.std import StdIn, StdOut, StdErr
 
 
 @pytest.mark.dependency(
@@ -30,3 +30,36 @@ def test_stdin_buffer(tmpdir, monkeypatch):
 
     with StdIn() as f:
         assert tuple(f.buffer) == (b'abc\n', b'123\n')
+
+
+@pytest.mark.dependency(
+    depends=[
+        ('session', 'tests/io/test_base.py::test_with'),
+    ],
+)
+def test_stdout_stderr(capsys):
+    with StdOut() as f1:
+        f1.write('hello')
+    with StdErr() as f2:
+        f2.write('world')
+    captured = capsys.readouterr()
+    assert captured.out == 'hello'
+    assert captured.err == 'world'
+
+
+def test_equal():
+    assert StdIn() == StdIn()
+    assert StdOut() == StdOut()
+    assert StdErr() == StdErr()
+
+    assert StdIn() != StdOut()
+    assert StdOut() != StdErr()
+    assert StdErr() != StdIn()
+
+    assert StdIn().buffer == StdIn().buffer
+    assert StdOut().buffer == StdOut().buffer
+    assert StdErr().buffer == StdErr().buffer
+
+    assert StdIn().buffer != StdOut().buffer
+    assert StdOut().buffer != StdErr().buffer
+    assert StdErr().buffer != StdIn().buffer

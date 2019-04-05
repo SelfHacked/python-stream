@@ -92,6 +92,10 @@ def buffer_class(
                 return False
             return self._text_file == other._text_file
 
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            # don't close
+            pass
+
     return BufferClass
 
 
