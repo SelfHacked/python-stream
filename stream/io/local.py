@@ -4,10 +4,11 @@ from gimme_cached_property import cached_property
 
 from . import (
     File as _File,
+    _wrapper,
 )
 
 
-class LocalFile(_File):
+class LocalFile(_wrapper.wrapper_class(_File, open)):
     def __init__(
             self,
             path: str,
@@ -18,8 +19,8 @@ class LocalFile(_File):
         """
         See params for `open`
         """
+        super().__init__(path, mode, *args, **kwargs)
         self.__path = path
-        self.__file = open(path, mode=mode, *args, **kwargs)
 
     @cached_property
     def path(self) -> str:
@@ -31,16 +32,3 @@ class LocalFile(_File):
         if self.path != other.path:
             return False
         return True
-
-    def __getattribute__(self, name: str):
-        if name in ('__dict__', '__class__'):
-            return object.__getattribute__(self, name)
-        if name in self.__dict__:
-            return object.__getattribute__(self, name)
-        if name in self.__class__.__dict__:
-            return object.__getattribute__(self, name)
-
-        try:
-            return getattr(self.__file, name)
-        except AttributeError:
-            return super().__getattribute__(name)
