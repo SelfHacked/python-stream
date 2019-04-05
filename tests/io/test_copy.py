@@ -4,17 +4,14 @@ import pytest
 
 from stream.io.local import LocalFile
 from stream.io.std import StdIn, StdOut, StdErr
+from .util import depends_with
 
 txt = """123
 abc
 """
 
 
-@pytest.mark.dependency(
-    depends=[
-        ('session', 'tests/io/test_base.py::test_with'),
-    ],
-)
+@depends_with()
 def test_copy_local(tmpdir):
     file = tmpdir / '0.txt'
     file.write_text(txt, encoding='utf-8')
@@ -27,11 +24,7 @@ def test_copy_local(tmpdir):
     assert file2.read_text(encoding='utf-8') == txt
 
 
-@pytest.mark.dependency(
-    depends=[
-        ('session', 'tests/io/test_base.py::test_with'),
-    ],
-)
+@depends_with()
 def test_same_file(tmpdir):
     file = tmpdir / '0.txt'
     file.write_text(txt, encoding='utf-8')
@@ -42,11 +35,7 @@ def test_same_file(tmpdir):
                 f1.copy_to(f2)
 
 
-@pytest.mark.dependency(
-    depends=[
-        ('session', 'tests/io/test_base.py::test_with'),
-    ],
-)
+@depends_with()
 def test_from_stdin(tmpdir, monkeypatch):
     monkeypatch.setattr('sys.stdin', StringIO(txt))
     file = tmpdir / '0.txt'
@@ -58,11 +47,7 @@ def test_from_stdin(tmpdir, monkeypatch):
     assert file.read_text(encoding='utf-8') == txt
 
 
-@pytest.mark.dependency(
-    depends=[
-        ('session', 'tests/io/test_base.py::test_with'),
-    ],
-)
+@depends_with()
 def test_to_stdout(tmpdir, capsys):
     file = tmpdir / '0.txt'
     file.write_text(txt, encoding='utf-8')
@@ -76,11 +61,7 @@ def test_to_stdout(tmpdir, capsys):
     assert captured.err == ''
 
 
-@pytest.mark.dependency(
-    depends=[
-        ('session', 'tests/io/test_base.py::test_with'),
-    ],
-)
+@depends_with()
 def test_to_stderr(tmpdir, capsys):
     file = tmpdir / '0.txt'
     file.write_text(txt, encoding='utf-8')

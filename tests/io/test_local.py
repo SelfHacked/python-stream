@@ -1,17 +1,13 @@
-import pytest
-
 from stream.io.local import LocalFile
+
+from .util import depends_with
 
 txt = """123
 abc
 """
 
 
-@pytest.mark.dependency(
-    depends=[
-        ('session', 'tests/io/test_base.py::test_with'),
-    ],
-)
+@depends_with()
 def test_read_file(tmpdir):
     file = tmpdir / '0.txt'
     file.write_text(txt, encoding='utf-8')
@@ -20,11 +16,7 @@ def test_read_file(tmpdir):
         assert f.read() == txt
 
 
-@pytest.mark.dependency(
-    depends=[
-        ('session', 'tests/io/test_base.py::test_with'),
-    ],
-)
+@depends_with()
 def test_write_file(tmpdir):
     file = tmpdir / '0.txt'
 

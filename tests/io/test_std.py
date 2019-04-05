@@ -1,15 +1,10 @@
 from io import StringIO
 
-import pytest
-
 from stream.io.std import StdIn, StdOut, StdErr
+from .util import depends_with
 
 
-@pytest.mark.dependency(
-    depends=[
-        ('session', 'tests/io/test_base.py::test_with'),
-    ],
-)
+@depends_with()
 def test_stdin(monkeypatch):
     monkeypatch.setattr('sys.stdin', StringIO('abc\n123\n'))
 
@@ -17,11 +12,7 @@ def test_stdin(monkeypatch):
         assert tuple(f) == ('abc\n', '123\n')
 
 
-@pytest.mark.dependency(
-    depends=[
-        ('session', 'tests/io/test_base.py::test_with'),
-    ],
-)
+@depends_with()
 def test_stdin_buffer(tmpdir, monkeypatch):
     file = tmpdir / '0.txt'
     file.write_text('abc\n123\n', encoding='utf-8')
@@ -32,11 +23,7 @@ def test_stdin_buffer(tmpdir, monkeypatch):
         assert tuple(f.buffer) == (b'abc\n', b'123\n')
 
 
-@pytest.mark.dependency(
-    depends=[
-        ('session', 'tests/io/test_base.py::test_with'),
-    ],
-)
+@depends_with()
 def test_stdout_stderr(capsys):
     with StdOut() as f1:
         f1.write('hello')
