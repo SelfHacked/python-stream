@@ -1,10 +1,15 @@
 import typing as _typing
 
+from gimme_cached_property import cached_property
+
 from . import (
     File as _File,
+    TextFile as _TextFile,
+    BinaryFile as _BinaryFile,
 )
 
 FileType = _typing.TypeVar('FileType', bound=_File)
+TextFileType = _typing.TypeVar('TextFileType', bound=_TextFile)
 
 
 def wrapper_class(
@@ -64,3 +69,37 @@ def wrapper_class(
                 return this_attr
 
     return WrapperClass
+
+
+def get_buffer_class(file: _File) -> _typing.Type[_BinaryFile]:
+    class BufferClass(wrapper_class(_BinaryFile, lambda: file._wrapped.buffer)):
+        _text_file = file
+
+        def __init__(self):
+            # no param
+            super().__init__()
+
+        def __eq__(self, other: _File):
+            if isinstance(other, BufferClass):
+                return True
+            if not hasattr(other, '_text_file'):
+                return False
+            return self._text_file == other._text_file
+
+    return BufferClass
+
+
+def text_wrapper_class(
+        file_class: _typing.Type[TextFileType],
+        wrapped_class: _typing.Union[_typing.Type, _typing.Callable],
+) -> _typing.Type[TextFileType]:
+    class TextWrapperClass(wrapper_class(file_class, wrapped_class)):
+        @cached_property
+        def _buffer_class(self) -> _typing.Type[_BinaryFile]:
+            return get_buffer_class(self)
+
+        @property
+        def buffer(self) -> _BinaryFile:
+            return self._buffer_class()
+
+    return TextWrapperClass
