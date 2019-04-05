@@ -10,7 +10,7 @@ from . import (
 )
 
 
-class LocalFile(_wrapper.wrapper_class(_File, open)):
+class LocalFile(_wrapper.wrapper_class(open)):
     def __init__(
             self,
             path: str,
@@ -44,7 +44,7 @@ class LocalFile(_wrapper.wrapper_class(_File, open)):
     def _buffer_class(self) -> _typing.Type[_BinaryFile]:
         if not self.text:
             raise AttributeError
-        return _wrapper.get_buffer_class(self)
+        return _wrapper.buffer_class(self)
 
     @property
     def buffer(self) -> _BinaryFile:

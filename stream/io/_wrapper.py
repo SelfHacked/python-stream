@@ -10,11 +10,13 @@ from . import (
 
 FileType = _typing.TypeVar('FileType', bound=_File)
 TextFileType = _typing.TypeVar('TextFileType', bound=_TextFile)
+BinaryFileType = _typing.TypeVar('BinaryFileType', bound=_BinaryFile)
 
 
 def wrapper_class(
-        file_class: _typing.Type[FileType],
         wrapped_class: _typing.Union[_typing.Type, _typing.Callable],
+        *,
+        file_class: _typing.Type[FileType] = _File,
 ) -> _typing.Type[FileType]:
     class WrapperClass(file_class):
         def __init__(self, *args, **kwargs):
@@ -71,8 +73,12 @@ def wrapper_class(
     return WrapperClass
 
 
-def get_buffer_class(file: _File) -> _typing.Type[_BinaryFile]:
-    class BufferClass(wrapper_class(_BinaryFile, lambda: file._wrapped.buffer)):
+def buffer_class(
+        file: _File,
+        *,
+        file_class: _typing.Type[BinaryFileType] = _BinaryFile,
+) -> _typing.Type[BinaryFileType]:
+    class BufferClass(binary_wrapper_class(lambda: file._wrapped.buffer, file_class=file_class)):
         _text_file = file
 
         def __init__(self):
@@ -90,16 +96,28 @@ def get_buffer_class(file: _File) -> _typing.Type[_BinaryFile]:
 
 
 def text_wrapper_class(
-        file_class: _typing.Type[TextFileType],
         wrapped_class: _typing.Union[_typing.Type, _typing.Callable],
+        *,
+        file_class: _typing.Type[TextFileType] = _TextFile,
 ) -> _typing.Type[TextFileType]:
-    class TextWrapperClass(wrapper_class(file_class, wrapped_class)):
+    class TextWrapperClass(wrapper_class(wrapped_class, file_class=file_class)):
         @cached_property
         def _buffer_class(self) -> _typing.Type[_BinaryFile]:
-            return get_buffer_class(self)
+            return buffer_class(self)
 
         @property
         def buffer(self) -> _BinaryFile:
             return self._buffer_class()
 
     return TextWrapperClass
+
+
+def binary_wrapper_class(
+        wrapped_class: _typing.Union[_typing.Type, _typing.Callable],
+        *,
+        file_class: _typing.Type[BinaryFileType] = _BinaryFile,
+) -> _typing.Type[BinaryFileType]:
+    class BinaryWrapperClass(wrapper_class(wrapped_class, file_class=file_class)):
+        pass
+
+    return BinaryWrapperClass
