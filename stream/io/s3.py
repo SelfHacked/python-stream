@@ -354,8 +354,8 @@ def get_cmd():
     """
     Stream to stdout
     """
-    import sys
     import argparse
+    from stream.io.std import StdOut
     parser = argparse.ArgumentParser()
     parser.add_argument('bucket')
     parser.add_argument('key')
@@ -366,8 +366,8 @@ def get_cmd():
             args.key,
             lines=False,
     ) as f:
-        for chunk in f:
-            sys.stdout.buffer.write(chunk)
+        with StdOut() as stdout:
+            f.copy_to(stdout.buffer)
 
 
 def copy_cmd():

@@ -271,8 +271,8 @@ def download_cmd():
 
 
 def get_cmd():
-    import sys
     import argparse
+    from stream.io.std import StdOut
     parser = argparse.ArgumentParser()
     parser.add_argument('url', type=str, nargs='?')
     parser.add_argument('--host', '-H', type=str)
@@ -289,4 +289,5 @@ def get_cmd():
             host,
             path,
     ) as f:
-        f.dump_to_buffer(sys.stdout.buffer)
+        with StdOut() as stdout:
+            f.dump_to_buffer(stdout.buffer)
