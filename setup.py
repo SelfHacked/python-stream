@@ -53,6 +53,8 @@ setup(
             's3-download=stream.io.s3:download_cmd',
             's3-get=stream.io.s3:get_cmd',
             's3-copy=stream.io.s3:copy_cmd',
+            'ftp-download=stream.io.ftp:download_cmd',
+            'ftp-get=stream.io.ftp:get_cmd',
         ],
     },
 )

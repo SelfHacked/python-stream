@@ -108,16 +108,24 @@ class S3ReadFile(BaseS3File):
         self.__current_chunk = b''
         self.__closed = False
 
+    @property
+    def _lines(self) -> bool:
+        return self.__lines
+
+    @property
+    def _chunk_size(self) -> int:
+        return self.__chunk_size
+
     @cached_property
     def _body(self) -> _StreamingBody:
         return self._obj.get()['Body']
 
     @cached_property
     def _chunks(self) -> _typing.Iterator[bytes]:
-        if self.__lines:
-            yield from self._body.iter_lines(chunk_size=self.__chunk_size)
+        if self._lines:
+            yield from self._body.iter_lines(chunk_size=self._chunk_size)
         else:
-            yield from self._body.iter_chunks(chunk_size=self.__chunk_size)
+            yield from self._body.iter_chunks(chunk_size=self._chunk_size)
 
     # --- os ---
 
@@ -161,7 +169,7 @@ class S3ReadFile(BaseS3File):
         return super().read(n=n)
 
     def readline(self, limit: int = -1) -> bytes:
-        if self.__lines:
+        if self._lines:
             return super().readline(limit=limit)
 
         try:
@@ -217,6 +225,10 @@ class S3WriteFile(BaseS3File):
         self.__closed = False
         self.__pending: _typing.BinaryIO = None
 
+    @property
+    def _tmpfile(self) -> bool:
+        return self.__tmpfile
+
     def _upload_obj(self, obj: _typing.BinaryIO):
         self._obj.upload_fileobj(obj)
 
@@ -271,7 +283,7 @@ class S3WriteFile(BaseS3File):
         return True
 
     def _create_storage(self) -> _typing.BinaryIO:
-        if self.__tmpfile:
+        if self._tmpfile:
             return _TemporaryFile()
         else:
             return _BytesIO()
