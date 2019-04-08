@@ -7,12 +7,23 @@ from . import (
 
 
 class DatabaseTableWrite(_BaseDatabaseTable[_Model]):
+    """
+    Write access to a database table.
+    """
+
     def __init__(
             self,
             *args,
             truncate: bool = False,
             **kwargs,
     ):
+        """
+        :param truncate: Truncate table before writing
+
+        :param args: and
+        :param kwargs:
+            See base class
+        """
         super().__init__(*args, **kwargs)
         self.__truncate = truncate
 

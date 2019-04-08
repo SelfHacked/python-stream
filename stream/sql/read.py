@@ -13,6 +13,14 @@ from . import (
 
 
 class DatabaseTableRead(_BaseDatabaseTable[_Model]):
+    """
+    Read access to a database table.
+
+    Before calling `.stream`,
+    the query can be customized by assigning to `.query`.
+    Use `.get_query()` to get the initial query.
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__query = None

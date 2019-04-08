@@ -33,6 +33,15 @@ class BaseDatabaseTable(_typing.Generic[Model]):
             engine: _typing.Union[_Engine, _Url, str],
             session: _Session = None,
     ):
+        """
+        :param model: SqlAlchemy model
+        :param engine:
+            If an engine object, use it;
+            If a str or an URL object, call create_engine.
+        :param session:
+            If provided, use the session for transactions;
+            If None, `with` must be used - a session will be created in the context.
+        """
         self.__model = model
 
         if isinstance(engine, (_Url, str)):
