@@ -20,6 +20,9 @@ Model = _typing.TypeVar('Model', bound=_DeclarativeMeta)
 
 
 class BaseDatabaseTable(_typing.Generic[Model]):
+    class SessionStateError(Exception):
+        pass
+
     def __init__(
             self,
             model: _typing.Type[Model],
@@ -34,6 +37,7 @@ class BaseDatabaseTable(_typing.Generic[Model]):
         self.__engine = engine
 
         self.__session = session
+        self.__create_session = session is None
 
     @property
     def model(self) -> _typing.Type[Model]:
@@ -46,7 +50,9 @@ class BaseDatabaseTable(_typing.Generic[Model]):
     @property
     def session(self) -> _Session:
         if self.__session is None:
-            self.__session = self._session_class()
+            raise self.SessionStateError(
+                'Please use `with` context manager when `session` is not provided'
+            )
         return self.__session
 
     @cached_property
@@ -58,3 +64,22 @@ class BaseDatabaseTable(_typing.Generic[Model]):
             return self.session.query(self.model)
         else:
             return self.session.query(*fields)
+
+    def commit(self):
+        self.session.commit()
+
+    def __enter__(self) -> 'BaseDatabaseTable[Model]':
+        if self.__create_session:
+            if self.__session is not None:
+                raise self.SessionStateError(
+                    'Please do not use `with` context manager multiple times. '
+                    'You may call `.commit()` within the `with` context.'
+                )
+            self.__session = self._session_class()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.commit()
+        if self.__create_session:
+            self.session.close()
+            self.__session = None

@@ -7,11 +7,11 @@ from stream.sql.write import DatabaseTableWrite
 def test_write(create_db):
     Model, engine = create_db
 
-    table = DatabaseTableWrite(Model, engine=engine)
-    table.bulk_insert([
-        Model(key=1, value='a'),
-        Model(key=2, value='b'),
-    ])
+    with DatabaseTableWrite(Model, engine=engine) as table:
+        table.bulk_insert([
+            Model(key=1, value='a'),
+            Model(key=2, value='b'),
+        ])
 
     # use new engine and session to validate
     engine2 = create_engine(engine.url)
@@ -28,11 +28,11 @@ def test_write(create_db):
 def test_truncate(populate_db):
     Model, engine = populate_db
 
-    table = DatabaseTableWrite(Model, engine=engine, truncate=True)
-    table.bulk_insert([
-        Model(key=1, value='a'),
-        Model(key=2, value='b'),
-    ])
+    with DatabaseTableWrite(Model, engine=engine, truncate=True) as table:
+        table.bulk_insert([
+            Model(key=1, value='a'),
+            Model(key=2, value='b'),
+        ])
 
     # use new engine and session to validate
     engine2 = create_engine(engine.url)

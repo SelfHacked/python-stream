@@ -30,4 +30,3 @@ class DatabaseTableWrite(_BaseDatabaseTable[_Model]):
         if self._truncate:
             self._truncate_table()
         self.session.add_all(objects)
-        self.session.commit()
