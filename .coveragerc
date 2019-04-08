@@ -1,2 +1,7 @@
 [run]
 source = stream
+omit =
+    # s3
+    stream/io/s3.py
+    # ftp
+    stream/io/ftp.py

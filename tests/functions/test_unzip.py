@@ -3,15 +3,14 @@ import gzip
 import pytest
 
 from stream.functions.bytes import un_gzip
-from stream.io import FileStream
+from stream.io.local import LocalFile
 
 
 @pytest.mark.dependency(
     scope='session',
     depends=[
-        'tests/test_io.py::test_file_stream',
+        'tests/io/test_base.py::test_stream',
         'tests/test_operators.py::test_or',
-        'tests/util/test_io.py::test_iter',
     ],
 )
 def test_un_gzip(tmpdir):
@@ -23,7 +22,7 @@ def test_un_gzip(tmpdir):
 """)
 
     assert tuple(
-        FileStream(file, binary=True)
+        LocalFile(file, mode='rb').stream
         | un_gzip
     ) == (
                b'#123\n',

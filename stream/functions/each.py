@@ -1,13 +1,13 @@
 import typing as _typing
 
 from stream.typing import (
-    BaseParamFunction as _BaseParamFunction,
+    Function as _Function,
     T_co as _T_co,
     V_co as _V_co,
 )
 
 
-class BaseOneToOneFunction(_BaseParamFunction[_T_co, _V_co]):
+class BaseOneToOneFunction(_Function[_T_co, _V_co]):
     def _call(self, item):
         raise NotImplementedError  # pragma: no cover
 
@@ -16,7 +16,7 @@ class BaseOneToOneFunction(_BaseParamFunction[_T_co, _V_co]):
             yield self._call(item)
 
 
-class apply_each(BaseOneToOneFunction[_T_co, _V_co]):
+class ApplyEach(BaseOneToOneFunction[_T_co, _V_co]):
     """
     Apply `func` to all items in the iterable.
     `func` must take each item as the first argument, and then take *args, **kwargs

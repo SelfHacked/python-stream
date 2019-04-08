@@ -1,18 +1,18 @@
 import typing as _typing
 
 from stream.functions.counting import (
-    report as _report,
-    log as _log,
+    Report as _Report,
+    Log as _Log,
 )
 from . import (
     from_function as _from_function,
 )
 
-report = _from_function(_report, has_params=True)
+report = _from_function(_Report, has_params=True)
 
 
 class log(object):
-    __self = _from_function(_log, has_params=True)
+    __self = _from_function(_Log, has_params=True)
 
     """
     Log progress of a generator

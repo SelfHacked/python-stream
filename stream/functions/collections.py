@@ -13,7 +13,7 @@ def yield_from(iterable: _typing.Iterable[_typing.Iterable]) -> _typing.Iterator
         yield from item
 
 
-class getitem(_BaseOneToOneFunction[_typing.Collection, _typing.Any]):
+class GetItem(_BaseOneToOneFunction[_typing.Collection, _typing.Any]):
     def __init__(self, index):
         self.__index = index
 

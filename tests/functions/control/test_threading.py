@@ -2,7 +2,7 @@ from time import sleep
 
 import pytest
 
-from stream.functions.control.threading import ThreadedPrefetchOneIterator, ThreadedPrefetchAllIterator
+from stream.functions.control.threading import Prefetch
 from stream.util.testing import assert_time
 
 
@@ -13,8 +13,8 @@ def dummy_iterable():
     yield 1
 
 
-def _test_prefetch(cls):
-    iterator = cls(dummy_iterable())
+def _test_prefetch(prefetch):
+    iterator = prefetch(dummy_iterable())
 
     with assert_time(0.1):
         assert next(iterator) == 0
@@ -28,28 +28,33 @@ def _test_prefetch(cls):
         next(iterator)
 
 
+@pytest.mark.dependency(
+    depends=[
+        ('session', 'tests/util/test_testing.py::test_assert_time'),
+    ],
+)
 def test_prefetch_one():
-    _test_prefetch(ThreadedPrefetchOneIterator)
+    _test_prefetch(Prefetch())
 
 
+@pytest.mark.dependency(
+    depends=[
+        ('session', 'tests/util/test_testing.py::test_assert_time'),
+    ],
+)
 def test_prefetch_all():
-    _test_prefetch(ThreadedPrefetchAllIterator)
+    _test_prefetch(Prefetch(n=None))
 
 
+@pytest.mark.dependency(
+    depends=[
+        ('session', 'tests/util/test_testing.py::test_assert_time'),
+    ],
+)
 def test_timeout():
-    iterator = ThreadedPrefetchAllIterator(dummy_iterable(), timeout=1)
+    iterator = Prefetch(n=None, timeout=1)(dummy_iterable())
     tuple(iterator)
 
-    iterator = ThreadedPrefetchAllIterator(dummy_iterable(), timeout=0)
-    with pytest.raises(iterator.Timeout):
+    iterator = Prefetch(n=None, timeout=0)(dummy_iterable())
+    with pytest.raises(Prefetch.Timeout):
         next(iterator)
-
-
-def test_wait():
-    iterator = ThreadedPrefetchAllIterator(dummy_iterable(), sleep=0.3)
-    with assert_time(0.3):
-        assert next(iterator) == 0
-
-    # the second record should have been prefetched by now
-    with assert_time(0):
-        assert next(iterator) == 1
