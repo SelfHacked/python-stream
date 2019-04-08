@@ -9,6 +9,9 @@ from sqlalchemy.ext.declarative.api import (
     DeclarativeMeta as _DeclarativeMeta,
 )
 from sqlalchemy.orm import (
+    Query as _Query,
+)
+from sqlalchemy.orm import (
     Session as _Session,
     sessionmaker as _sessionmaker,
 )
@@ -16,7 +19,7 @@ from sqlalchemy.orm import (
 Model = _typing.TypeVar('Model', bound=_DeclarativeMeta)
 
 
-class BaseDatabaseTable(object):
+class BaseDatabaseTable(_typing.Generic[Model]):
     def __init__(
             self,
             model: _typing.Type[Model],
@@ -49,3 +52,9 @@ class BaseDatabaseTable(object):
     @cached_property
     def _session_class(self) -> _sessionmaker:
         return _sessionmaker(bind=self.engine)
+
+    def get_query(self, *fields) -> _Query:
+        if len(fields) == 0:
+            return self.session.query(self.model)
+        else:
+            return self.session.query(*fields)

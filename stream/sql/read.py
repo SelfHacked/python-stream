@@ -8,19 +8,14 @@ from stream import (
 )
 from . import (
     BaseDatabaseTable as _BaseDatabaseTable,
+    Model as _Model,
 )
 
 
-class DatabaseTableRead(_BaseDatabaseTable):
+class DatabaseTableRead(_BaseDatabaseTable[_Model]):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__query = None
-
-    def get_query(self, *fields) -> _Query:
-        if len(fields) == 0:
-            return self.session.query(self.model)
-        else:
-            return self.session.query(*fields)
 
     @property
     def query(self) -> _Query:
@@ -33,5 +28,5 @@ class DatabaseTableRead(_BaseDatabaseTable):
         self.__query = val
 
     @property
-    def stream(self) -> _Stream:
+    def stream(self) -> _Stream[_Model]:
         return _IterStream(self.query)
