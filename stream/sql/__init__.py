@@ -5,6 +5,9 @@ from sqlalchemy.engine import (
     Engine as _Engine,
     create_engine as _create_engine,
 )
+from sqlalchemy.engine.url import (
+    URL as _Url,
+)
 from sqlalchemy.ext.declarative.api import (
     DeclarativeMeta as _DeclarativeMeta,
 )
@@ -27,12 +30,12 @@ class BaseDatabaseTable(_typing.Generic[Model]):
             self,
             model: _typing.Type[Model],
             *,
-            engine: _typing.Union[_Engine, str],
+            engine: _typing.Union[_Engine, _Url, str],
             session: _Session = None,
     ):
         self.__model = model
 
-        if isinstance(engine, str):
+        if isinstance(engine, (_Url, str)):
             engine = _create_engine(engine)
         self.__engine = engine
 
