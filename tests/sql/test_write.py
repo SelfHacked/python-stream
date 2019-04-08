@@ -30,7 +30,8 @@ def test_write(create_db):
 def test_truncate(populate_db):
     Model, engine = populate_db
 
-    with DatabaseTableWrite(Model, engine=engine, truncate=True) as table:
+    with DatabaseTableWrite(Model, engine=engine) as table:
+        table.truncate()
         table.bulk_insert([
             Model(key=1, value='a'),
             Model(key=2, value='b'),
