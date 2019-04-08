@@ -4,7 +4,10 @@ extra_s3 = [
     'boto3>=1.9',
     'botocore',
 ]
-extra_all = extra_s3
+extra_sql = [
+    'sqlalchemy',
+]
+extra_all = extra_s3 + extra_sql
 
 extra_test = [
     'pytest>=4',
@@ -12,7 +15,7 @@ extra_test = [
     'pytest-cov>=2',
     'pytest-dependency @ https://github.com/SelfHacked/pytest-dependency/archive/master.zip',
     'cached-property',
-]
+] + extra_sql
 extra_dev = extra_all + extra_test
 
 extra_ci = extra_test + [
@@ -33,6 +36,7 @@ setup(
 
     extras_require={
         's3': extra_s3,
+        'sqlalchemy': extra_sql,
 
         'all': extra_all,
 
