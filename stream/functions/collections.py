@@ -13,9 +13,12 @@ def yield_from(iterable: _typing.Iterable[_typing.Iterable]) -> _typing.Iterator
         yield from item
 
 
-class GetItem(_BaseOneToOneFunction[_typing.Collection, _typing.Any]):
+Collection = _typing.Union[_typing.Sequence, _typing.Mapping]
+
+
+class GetItem(_BaseOneToOneFunction[Collection, _typing.Any]):
     def __init__(self, index):
         self.__index = index
 
-    def _call(self, item):
+    def _call(self, item: Collection) -> _typing.Any:
         return item[self.__index]
