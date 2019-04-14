@@ -43,7 +43,7 @@ class GetItem(_BaseOneToOneFunction[Collection, _typing.Any]):
     def none(self) -> bool:
         return self.__none
 
-    def _call(self, item: Collection) -> _typing.Any:
+    def each(self, item: Collection) -> _typing.Any:
         try:
             return item[self.index]
         except (IndexError, KeyError):
@@ -67,9 +67,9 @@ class GetItems(_BaseOneToOneFunction[Collection, _typing.Tuple]):
         ]
 
     @_returns(tuple)
-    def _call(self, item: Collection) -> _typing.Tuple:
-        for get_item in self.__get_items:
-            yield get_item._call(item)
+    def each(self, item: Collection) -> _typing.Tuple:
+        for get_item in self.__get_items:  # type: GetItem
+            yield get_item.each(item)
 
 
 class ToDict(_BaseOneToOneFunction[_typing.Sequence, _typing.Dict]):
@@ -87,9 +87,9 @@ class ToDict(_BaseOneToOneFunction[_typing.Sequence, _typing.Dict]):
         ]
 
     @_returns(dict)
-    def _call(self, item: _typing.Sequence) -> _typing.Dict:
-        for key, get_item in self.__get_items:
-            yield key, get_item._call(item)
+    def each(self, item: _typing.Sequence) -> _typing.Dict:
+        for key, get_item in self.__get_items:  # type: _typing.Any, GetItem
+            yield key, get_item.each(item)
 
 
 class SelectKeys(_BaseOneToOneFunction[_typing.Mapping, _typing.Dict]):
@@ -107,6 +107,6 @@ class SelectKeys(_BaseOneToOneFunction[_typing.Mapping, _typing.Dict]):
         ]
 
     @_returns(dict)
-    def _call(self, item: _typing.Sequence) -> _typing.Dict:
-        for get_item in self.__get_items:
-            yield get_item.index, get_item._call(item)
+    def each(self, item: _typing.Sequence) -> _typing.Dict:
+        for get_item in self.__get_items:  # type: GetItem
+            yield get_item.index, get_item.each(item)

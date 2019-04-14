@@ -8,12 +8,12 @@ from stream.typing import (
 
 
 class BaseOneToOneFunction(_Function[_T_co, _V_co]):
-    def _call(self, item: _T_co) -> _V_co:
+    def each(self, item: _T_co) -> _V_co:
         raise NotImplementedError  # pragma: no cover
 
     def __call__(self, iterable: _typing.Iterable[_T_co]) -> _typing.Iterator[_V_co]:
         for item in iterable:
-            yield self._call(item)
+            yield self.each(item)
 
 
 class ApplyEach(BaseOneToOneFunction[_T_co, _V_co]):
@@ -27,5 +27,5 @@ class ApplyEach(BaseOneToOneFunction[_T_co, _V_co]):
         self.__args = args
         self.__kwargs = kwargs
 
-    def _call(self, item: _T_co) -> _V_co:
+    def each(self, item: _T_co) -> _V_co:
         return self.__func(item, *self.__args, **self.__kwargs)

@@ -19,7 +19,7 @@ class BaseReport(_BaseOneToOneFunction[_T_co, _T_co]):
     def _finish_callback(self, n: int):
         raise NotImplementedError  # pragma: no cover
 
-    def _call(self, item: _T_co) -> _T_co:
+    def each(self, item: _T_co) -> _T_co:
         self.__count += 1
         if self.__count % self.__interval == 0:
             self._interval_callback(self.__count)
