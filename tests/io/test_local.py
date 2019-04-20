@@ -61,3 +61,12 @@ def test_no_buffer(tmpdir):
     with LocalFile(str(file), 'wb') as f2:
         with pytest.raises(AttributeError):
             f2.buffer
+
+
+@depends_with()
+def test_next(tmpdir):
+    file = tmpdir / '0.txt'
+    file.write_text(txt, encoding='utf-8')
+
+    with LocalFile(str(file)) as f:
+        assert next(f) == '123\n'

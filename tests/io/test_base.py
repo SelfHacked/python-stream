@@ -54,6 +54,18 @@ abc
             raise self.EOF
 
 
+class DummyNotReadable(TextFile):
+    def readable(self) -> bool:
+        return False
+
+    def close(self) -> None:
+        pass
+
+    @property
+    def closed(self) -> bool:
+        return False
+
+
 def test_with():
     f = DummyFile()
 
@@ -104,3 +116,10 @@ def test_iter():
 def test_stream():
     with DummyTextFile() as f:
         assert tuple(f.stream) == ('123\n', 'abc\n')
+
+
+@depends_with()
+def test_stream_not_readable():
+    with DummyNotReadable() as f:
+        with pytest.raises(DummyNotReadable.NotSupported):
+            f.stream
