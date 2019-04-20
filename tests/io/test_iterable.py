@@ -83,3 +83,9 @@ def test_os():
         with pytest.raises(OSError):
             f.fileno()
         assert not f.isatty()
+
+
+@depends_with()
+def test_eq():
+    with get() as f1, get() as f2:
+        assert f1 != f2

@@ -24,7 +24,7 @@ class Csv(_BaseOneToOneFunction[str, CsvRow]):
         self.__args = args
         self.__kwargs = kwargs
 
-    def _call(self, item: str) -> CsvRow:
+    def each(self, item: str) -> CsvRow:
         return next(_csv.reader([item], *self.__args, **self.__kwargs))
 
 
