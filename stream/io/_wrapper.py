@@ -42,7 +42,7 @@ def wrapper_class(
             3. Try get attr of wrapped object;
             4. Use definition from file_class.
             """
-            if name == '__dict__':
+            if name in ['__dict__', '__class__']:
                 return object.__getattribute__(self, name)
             if name in self.__dict__:
                 # is a variable
@@ -57,12 +57,13 @@ def wrapper_class(
                 # cached_property
                 return this_attr
 
+            cls_attr = getattr(self.__class__, name)
             try:
-                super_attr = super(WrapperClass, self).__getattribute__(name)
-            except (AttributeError, NotImplementedError):
+                super_cls_attr = getattr(file_class, name)
+            except AttributeError:
                 return this_attr
 
-            if this_attr != super_attr:
+            if cls_attr != super_cls_attr:
                 return this_attr
 
             try:
