@@ -6,6 +6,7 @@ from stream.mixins.each import (
 )
 from stream.mixins.index import (
     Index as _Index,
+    LastIndex as _LastIndex,
     BaseMatchIndexFunc as _BaseMatchIndexFunc,
     MatchIndexFunc as _MatchIndexFunc,
 )
@@ -48,6 +49,8 @@ class ApplyAtIndex(
             self,
             match: _Index,
             each: _Each,
+            *,
+            ended: _LastIndex = None,
     ):
-        _MatchIndexFunc.__init__(self, match)
+        _MatchIndexFunc.__init__(self, match, ended=ended)
         _ItemFunc.__init__(self, each)

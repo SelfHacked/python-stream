@@ -1,5 +1,6 @@
 import typing as _typing
 
+from gimme_cached_property import cached_property
 from logical import (
     BaseFunction as _BaseLogicalFunction,
     Function as _LogicalFunction,
@@ -21,6 +22,10 @@ Index = _typing.Union[
     _typing.Collection[int],
     MatchIndex,
 ]
+LastIndex = _typing.Union[
+    int,
+    MatchIndex,
+]
 
 
 class BaseMatchIndexFunc(object):
@@ -40,25 +45,46 @@ class BaseMatchIndexFunc(object):
 
 
 class MatchIndexFunc(BaseMatchIndexFunc):
-    def __init__(self, match: Index):
-        if isinstance(match, int):
-            ended = _Ge(match)
-            match = _Equal(match)
-        elif isinstance(match, _typing.Collection):
-            ended = _Ge(max(match))
-            match = _In(match)
-        else:
-            ended = _false
-        self.__match = _LogicalFunction.get(match)
+    def __init__(
+            self,
+            match: Index,
+            *,
+            ended: LastIndex = None,
+    ):
+        self.__match = match
         self.__ended = ended
 
-    @property
+    @cached_property
     def match_index_f(self) -> _BaseLogicalFunction:
-        return self.__match
+        if isinstance(self.__match, int):
+            return _Equal(self.__match)
+        elif isinstance(self.__match, _typing.Collection):
+            return _In(self.__match)
+        else:
+            return _LogicalFunction.get(self.__match)
 
-    @property
+    @cached_property
+    def _ended_f(self) -> _BaseLogicalFunction:
+        if isinstance(self.__ended, int):
+            return _Ge(self.__ended)
+        else:
+            return _LogicalFunction.get(self.__ended)
+
+    @cached_property
+    def _ended_f_match(self) -> _BaseLogicalFunction:
+        if isinstance(self.__match, int):
+            return _Ge(self.__match)
+        elif isinstance(self.__match, _typing.Collection):
+            return _Ge(max(self.__match))
+        else:
+            return _false
+
+    @cached_property
     def ended_f(self) -> _BaseLogicalFunction:
-        return self.__ended
+        if self.__ended is not None:
+            return self._ended_f
+        else:
+            return self._ended_f_match
 
     def match_index(self, index: int) -> bool:
         return self.match_index_f(index)
