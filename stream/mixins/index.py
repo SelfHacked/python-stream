@@ -4,6 +4,12 @@ from logical import (
     BaseFunction as _BaseLogicalFunction,
     Function as _LogicalFunction,
 )
+from logical.collection import (
+    In as _In,
+)
+from logical.comparison import (
+    Equal as _Equal,
+)
 
 MatchIndex = _typing.Callable[[int], bool]
 Index = _typing.Union[
@@ -23,25 +29,11 @@ class BaseMatchIndexFunc(object):
 
 
 class MatchIndexFunc(BaseMatchIndexFunc):
-    @staticmethod
-    def index(i) -> MatchIndex:
-        def match(x):
-            return x == i
-
-        return match
-
-    @staticmethod
-    def indexes(collection) -> MatchIndex:
-        def match(x):
-            return x in collection
-
-        return match
-
     def __init__(self, match: Index):
         if isinstance(match, int):
-            match = self.index(match)
+            match = _Equal(match)
         elif isinstance(match, _typing.Collection):
-            match = self.indexes(match)
+            match = _In(match)
         self.__match = _LogicalFunction.get(match)
 
     @property
