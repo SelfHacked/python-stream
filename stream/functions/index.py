@@ -27,12 +27,16 @@ class BaseApplyAtIndex(
             iterable: _typing.Iterable[_T_co],
     ) -> _typing.Iterator[_typing.Union[_T_co, _V_co]]:
         index = 0
-        for item in iterable:
+        iterator = iter(iterable)
+        for item in iterator:
             if self.match_index(index):
                 yield self.each(item)
             else:
                 yield item
+            if self.ended(index):
+                break
             index += 1
+        yield from iterator
 
 
 class ApplyAtIndex(
