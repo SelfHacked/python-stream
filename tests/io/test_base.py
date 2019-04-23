@@ -116,3 +116,12 @@ def test_stream_not_readable():
     with DummyNotReadable() as f:
         with pytest.raises(DummyNotReadable.NotSupported):
             f.stream
+
+
+def test_newline():
+    bin = DummyFile()
+    assert bin.newline == 10
+    assert bin.newline_str == b'\n'
+    txt = DummyTextFile()
+    assert txt.newline == '\n'
+    assert txt.newline_str == '\n'

@@ -63,3 +63,33 @@ def test_next(tmpdir):
 
     with LocalFile(str(file)) as f:
         assert next(f) == '123\n'
+
+
+def test_call_text(tmpdir):
+    file = tmpdir / '0.txt'
+
+    with LocalFile(str(file), 'w') as f:
+        f.input(txt.splitlines(keepends=False))
+
+    assert file.read_text(encoding='utf-8') == txt
+
+
+def test_call_bytes(tmpdir):
+    file = tmpdir / '0.txt'
+
+    with LocalFile(str(file), 'wb') as f:
+        f.input(bin.splitlines(keepends=False))
+
+    assert file.read_text(encoding='utf-8') == txt
+
+
+def test_newline(tmpdir):
+    file = tmpdir / '0.txt'
+
+    with LocalFile(str(file), 'w') as f1:
+        assert f1.newline == '\n'
+        assert f1.newline_str == '\n'
+
+    with LocalFile(str(file), 'wb') as f2:
+        assert f2.newline == 10
+        assert f2.newline_str == b'\n'
