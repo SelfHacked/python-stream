@@ -13,7 +13,6 @@ extra_test = [
     'pytest>=4',
     'pytest-runner>=4',
     'pytest-cov>=2',
-    'pytest-dependency @ https://github.com/SelfHacked/pytest-dependency/archive/master.zip',
     'cached-property',
 ] + extra_sql
 extra_dev = extra_all + extra_test

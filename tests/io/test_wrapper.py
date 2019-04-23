@@ -1,12 +1,10 @@
 from stream.io.local import LocalFile
-from .util import depends_with
 
 txt = """123
 abc
 """
 
 
-@depends_with()
 def test_buffer_eq(tmpdir):
     file = tmpdir / '0.txt'
     file.write_text(txt, encoding='utf-8')

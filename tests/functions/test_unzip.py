@@ -1,18 +1,9 @@
 import gzip
 
-import pytest
-
 from stream.functions.bytes import un_gzip
 from stream.io.local import LocalFile
 
 
-@pytest.mark.dependency(
-    scope='session',
-    depends=[
-        'tests/io/test_base.py::test_stream',
-        'tests/test_operators.py::test_or',
-    ],
-)
 def test_un_gzip(tmpdir):
     file = str(tmpdir / '0.txt.gz')
     with gzip.open(file, mode='wb') as f:

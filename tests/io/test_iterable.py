@@ -3,7 +3,6 @@ from io import SEEK_CUR
 import pytest
 
 from stream.io.iterable import IterableFile
-from .util import depends_with
 
 
 def get() -> IterableFile:
@@ -14,7 +13,6 @@ def get() -> IterableFile:
 """])
 
 
-@depends_with()
 def test_readonly():
     with get() as f:
         assert f.readable()
@@ -27,9 +25,6 @@ def test_readonly():
             f.flush()
 
 
-@depends_with(
-    ('session', 'tests/io/test_base.py::test_read'),
-)
 def test_tell():
     with get() as f:
         assert f.tell() == 0
@@ -41,7 +36,6 @@ def test_tell():
         assert f.tell() == 10
 
 
-@depends_with()
 def test_seekable():
     with get() as f:
         assert f.seekable()
@@ -49,7 +43,6 @@ def test_seekable():
             f.truncate()
 
 
-@depends_with()
 def test_seek_forward_only():
     with get() as f:
         with pytest.raises(OSError):
@@ -61,10 +54,6 @@ def test_seek_forward_only():
             f.seek(-1, 1)
 
 
-@depends_with(
-    ('session', 'tests/io/test_base.py::test_read'),
-    'test_tell',
-)
 def test_seek():
     with get() as f:
         f.seek(2)
@@ -75,7 +64,6 @@ def test_seek():
         assert f.read(1) == b'5'
 
 
-@depends_with()
 def test_os():
     with get() as f:
         assert f.mode == 'rb'
@@ -85,7 +73,6 @@ def test_os():
         assert not f.isatty()
 
 
-@depends_with()
 def test_eq():
     with get() as f1, get() as f2:
         assert f1 != f2

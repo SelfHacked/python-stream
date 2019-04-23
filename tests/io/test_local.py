@@ -1,7 +1,6 @@
 import pytest
 
 from stream.io.local import LocalFile
-from .util import depends_with
 
 txt = """123
 abc
@@ -11,7 +10,6 @@ abc
 """
 
 
-@depends_with()
 def test_read_file(tmpdir):
     file = tmpdir / '0.txt'
     file.write_text(txt, encoding='utf-8')
@@ -20,7 +18,6 @@ def test_read_file(tmpdir):
         assert f.read() == txt
 
 
-@depends_with()
 def test_write_file(tmpdir):
     file = tmpdir / '0.txt'
 
@@ -30,7 +27,6 @@ def test_write_file(tmpdir):
     assert file.read_text(encoding='utf-8') == txt
 
 
-@depends_with()
 def test_read_buffer(tmpdir):
     file = tmpdir / '0.txt'
     file.write_text(txt, encoding='utf-8')
@@ -39,7 +35,6 @@ def test_read_buffer(tmpdir):
         assert f.buffer.read() == bin
 
 
-@depends_with()
 def test_write_buffer(tmpdir):
     file = tmpdir / '0.txt'
 
@@ -49,7 +44,6 @@ def test_write_buffer(tmpdir):
     assert file.read_text(encoding='utf-8') == txt
 
 
-@depends_with()
 def test_no_buffer(tmpdir):
     file = tmpdir / '0.txt'
     file.write_text(txt, encoding='utf-8')
@@ -63,7 +57,6 @@ def test_no_buffer(tmpdir):
             f2.buffer
 
 
-@depends_with()
 def test_next(tmpdir):
     file = tmpdir / '0.txt'
     file.write_text(txt, encoding='utf-8')
