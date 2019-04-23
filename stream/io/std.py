@@ -42,3 +42,8 @@ class StdErr(_wrapper.text_wrapper_class(lambda: _sys.stderr)):
     def __exit__(self, exc_type, exc_val, exc_tb):
         # don't close
         pass
+
+
+stdin = StdIn()
+stdout = StdOut()
+stderr = StdErr()

@@ -1,7 +1,6 @@
 import pytest
 
 from stream.io import BinaryFile, TextFile
-from .util import depends_with
 
 
 class DummyFile(BinaryFile):
@@ -78,7 +77,6 @@ def test_with():
             pass
 
 
-@depends_with()
 def test_read():
     with DummyFile() as f:
         assert f.read(0) == b''
@@ -87,7 +85,6 @@ def test_read():
         assert f.read() == b'45\n\n6\n'
 
 
-@depends_with()
 def test_readline():
     with DummyFile() as f:
         assert f.readline(0) == b''
@@ -96,7 +93,6 @@ def test_readline():
         assert f.readline(100) == b'45\n'
 
 
-@depends_with()
 def test_readlines():
     with DummyFile() as f:
         assert f.readlines(0) == []
@@ -105,21 +101,27 @@ def test_readlines():
         assert f.readlines() == [b'6\n']
 
 
-@depends_with()
 def test_iter():
     with DummyFile() as f:
         assert next(f) == b'123\n'
         assert tuple(f) == (b'45\n', b'\n', b'6\n')
 
 
-@depends_with()
 def test_stream():
     with DummyTextFile() as f:
         assert tuple(f.stream) == ('123\n', 'abc\n')
 
 
-@depends_with()
 def test_stream_not_readable():
     with DummyNotReadable() as f:
         with pytest.raises(DummyNotReadable.NotSupported):
             f.stream
+
+
+def test_newline():
+    bin = DummyFile()
+    assert bin.newline == 10
+    assert bin.newline_str == b'\n'
+    txt = DummyTextFile()
+    assert txt.newline == '\n'
+    assert txt.newline_str == '\n'

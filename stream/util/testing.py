@@ -17,5 +17,4 @@ def assert_time(
         yield
     finally:
         t = _time() - start
-        print(t)
         assert -margin <= t - expected_time <= margin

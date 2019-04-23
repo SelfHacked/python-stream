@@ -33,6 +33,20 @@ class LocalFile(_wrapper.wrapper_class(open)):
     def text(self) -> bool:
         return 'b' not in self.__mode
 
+    @cached_property
+    def newline(self):
+        if self.text:
+            return '\n'
+        else:
+            return 10
+
+    @cached_property
+    def newline_str(self):
+        if self.text:
+            return '\n'
+        else:
+            return b'\n'
+
     def __eq__(self, other: _File):
         if not isinstance(other, LocalFile):
             return False

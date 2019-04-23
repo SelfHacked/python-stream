@@ -21,6 +21,15 @@ class File(_typing.IO[_typing.AnyStr]):
             raise self.NotSupported
         return _IterStream(self)
 
+    def input(self, lines: _typing.Iterable[_typing.AnyStr]) -> None:
+        """
+        Write a sequence of lines.
+        Line endings are added.
+        """
+        for line in lines:
+            self.write(line)
+            self.write(self.newline_str)
+
     class SameFile(ValueError):
         pass
 
@@ -105,6 +114,10 @@ class File(_typing.IO[_typing.AnyStr]):
 
     @property
     def newline(self) -> Character:
+        raise NotImplementedError  # pragma: no cover
+
+    @property
+    def newline_str(self) -> _typing.AnyStr:
         raise NotImplementedError  # pragma: no cover
 
     def _read_iter(
@@ -204,7 +217,11 @@ class File(_typing.IO[_typing.AnyStr]):
 
 class TextFile(File[str], _typing.TextIO):
     @property
-    def newline(self) -> Character:
+    def newline(self) -> str:
+        return '\n'
+
+    @property
+    def newline_str(self) -> str:
         return '\n'
 
     def _read(
@@ -240,8 +257,12 @@ class TextFile(File[str], _typing.TextIO):
 
 class BinaryFile(File[bytes], _typing.BinaryIO):
     @property
-    def newline(self) -> Character:
+    def newline(self) -> int:
         return 10  # b'\n'
+
+    @property
+    def newline_str(self) -> bytes:
+        return b'\n'
 
     def _read(
             self,
