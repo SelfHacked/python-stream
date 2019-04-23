@@ -30,12 +30,13 @@ class BaseApplyAtIndex(
         index = 0
         iterator = iter(iterable)
         for item in iterator:
+            if self.ended(index):
+                yield item
+                break
             if self.match_index(index):
                 yield self.each(item)
             else:
                 yield item
-            if self.ended(index):
-                break
             index += 1
         yield from iterator
 

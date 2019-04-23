@@ -14,6 +14,7 @@ from logical.collection import (
 from logical.comparison import (
     Equal as _Equal,
     GreaterThanOrEqual as _Ge,
+    GreaterThan as _Gt,
 )
 
 MatchIndex = _typing.Callable[[int], bool]
@@ -73,9 +74,9 @@ class MatchIndexFunc(BaseMatchIndexFunc):
     @cached_property
     def _ended_f_match(self) -> _BaseLogicalFunction:
         if isinstance(self.__match, int):
-            return _Ge(self.__match)
+            return _Gt(self.__match)
         elif isinstance(self.__match, _typing.Collection):
-            return _Ge(max(self.__match))
+            return _Gt(max(self.__match))
         else:
             return _false
 

@@ -1,5 +1,6 @@
 import string
 
+from logical.boolean import true
 from logical.comparison import GreaterThan
 from logical.num import is_odd
 
@@ -27,10 +28,16 @@ def test_index_collection():
 def test_ended():
     assert ''.join(
         ApplyAtIndex(is_odd, str.upper, ended=GreaterThan(10))(string.ascii_lowercase)
-    ) == 'aBcDeFgHiJkLmnopqrstuvwxyz'
+    ) == 'aBcDeFgHiJklmnopqrstuvwxyz'
 
 
 def test_last_index():
     assert ''.join(
         ApplyAtIndex(is_odd, str.upper, ended=11)(string.ascii_lowercase)
-    ) == 'aBcDeFgHiJkLmnopqrstuvwxyz'
+    ) == 'aBcDeFgHiJklmnopqrstuvwxyz'
+
+
+def test_skip_all():
+    assert ''.join(
+        ApplyAtIndex(true, str.upper, ended=0)(string.ascii_lowercase)
+    ) == 'abcdefghijklmnopqrstuvwxyz'
