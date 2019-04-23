@@ -32,7 +32,7 @@ setup(
     install_requires=[
         'returns-decorator',
         'gimme-cached-property',
-        'logical-func',
+        'logical-func>=1.2',
     ],
 
     extras_require={
