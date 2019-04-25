@@ -1,5 +1,8 @@
 from setuptools import setup, find_packages
 
+extra_cached_property = [
+    'cached-property',
+]
 extra_s3 = [
     'boto3>=1.9',
     'botocore',
@@ -7,17 +10,30 @@ extra_s3 = [
 extra_sql = [
     'sqlalchemy',
 ]
-extra_all = extra_s3 + extra_sql
+extra_bin = [
+    *extra_cached_property,
+    *extra_s3,
+]
+extra_all = [
+    *extra_cached_property,
+    *extra_s3,
+    *extra_sql,
+]
 
 extra_test = [
     'pytest>=4',
     'pytest-runner>=4',
     'pytest-cov>=2',
-    'cached-property',
-] + extra_sql
-extra_dev = extra_all + extra_test
+    *extra_sql,
+    *extra_cached_property,
+]
+extra_dev = [
+    *extra_all,
+    *extra_test,
+]
 
-extra_ci = extra_test + [
+extra_ci = [
+    *extra_test,
     'python-coveralls',
 ]
 
@@ -35,9 +51,11 @@ setup(
     ],
 
     extras_require={
+        'cached-property': extra_cached_property,
         's3': extra_s3,
         'sqlalchemy': extra_sql,
 
+        'bin': extra_bin,
         'all': extra_all,
 
         'test': extra_test,
