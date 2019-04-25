@@ -1,6 +1,6 @@
 import pytest
 
-from stream.functions.collections import yield_from, GetItem, GetItems, ToDict, SelectKeys
+from stream.functions.collections import yield_from, GetItem, GetItems, ToDict, SelectKeys, ApplyOnKeys, ReplaceKeys
 
 
 def test_yield_from():
@@ -56,4 +56,130 @@ def test_select_keys():
     assert tuple(select_keys(dicts)) == (
         {'x': '1', 'z': '3'},
         {'x': 'a', 'z': 'c'},
+    )
+
+
+def test_apply_on_keys():
+    apply = ApplyOnKeys(int, 'x')
+    dicts = (
+        {'x': '1', 'y': '2', 'z': '3'},
+        {'x': '10', 'y': 'b', 'z': 'c'},
+    )
+    assert tuple(apply(dicts)) == (
+        {'x': 1, 'y': '2', 'z': '3'},
+        {'x': 10, 'y': 'b', 'z': 'c'},
+    )
+    assert dicts == (
+        {'x': 1, 'y': '2', 'z': '3'},
+        {'x': 10, 'y': 'b', 'z': 'c'},
+    )
+
+
+def test_apply_on_all():
+    apply = ApplyOnKeys(int)
+    dicts = (
+        {'x': '1', 'y': '2', 'z': '3'},
+        {'x': '10', 'y': '20', 'z': '30'},
+    )
+    assert tuple(apply(dicts)) == (
+        {'x': 1, 'y': 2, 'z': 3},
+        {'x': 10, 'y': 20, 'z': 30},
+    )
+    assert dicts == (
+        {'x': 1, 'y': 2, 'z': 3},
+        {'x': 10, 'y': 20, 'z': 30},
+    )
+
+
+def test_copy():
+    apply = ApplyOnKeys(int, copy=True)
+    dicts = (
+        {'x': '1', 'y': '2', 'z': '3'},
+        {'x': '10', 'y': '20', 'z': '30'},
+    )
+    assert tuple(apply(dicts)) == (
+        {'x': 1, 'y': 2, 'z': 3},
+        {'x': 10, 'y': 20, 'z': 30},
+    )
+    assert dicts == (
+        {'x': '1', 'y': '2', 'z': '3'},
+        {'x': '10', 'y': '20', 'z': '30'},
+    )
+
+
+def test_apply_on_error():
+    apply = ApplyOnKeys(int, 'x')
+    dicts = (
+        {'y': '2', 'z': '3'},
+        {'x': 'a', 'y': 'b', 'z': 'c'},
+    )
+    with pytest.raises(KeyError):
+        tuple(apply([dicts[0]]))
+    with pytest.raises(ValueError):
+        tuple(apply([dicts[1]]))
+
+
+def test_apply_on_none():
+    apply = ApplyOnKeys(int, 'x', none=True)
+    dicts = (
+        {'y': '2', 'z': '3'},
+        {'x': 'a', 'y': 'b', 'z': 'c'},
+    )
+    assert tuple(apply(dicts)) == (
+        {'x': None, 'y': '2', 'z': '3'},
+        {'x': None, 'y': 'b', 'z': 'c'},
+    )
+
+
+def test_replace_keys():
+    replace = ReplaceKeys({'x': 'a'})
+    dicts = (
+        {'x': '1', 'y': '2', 'z': '3'},
+        {'x': '10', 'y': 'b', 'z': 'c'},
+    )
+    assert tuple(replace(dicts)) == (
+        {'a': '1', 'y': '2', 'z': '3'},
+        {'a': '10', 'y': 'b', 'z': 'c'},
+    )
+    assert dicts == (
+        {'a': '1', 'y': '2', 'z': '3'},
+        {'a': '10', 'y': 'b', 'z': 'c'},
+    )
+
+
+def test_replace_keys_copy():
+    replace = ReplaceKeys({'x': 'a'}, copy=True)
+    dicts = (
+        {'x': '1', 'y': '2', 'z': '3'},
+        {'x': '10', 'y': 'b', 'z': 'c'},
+    )
+    assert tuple(replace(dicts)) == (
+        {'a': '1', 'y': '2', 'z': '3'},
+        {'a': '10', 'y': 'b', 'z': 'c'},
+    )
+    assert dicts == (
+        {'x': '1', 'y': '2', 'z': '3'},
+        {'x': '10', 'y': 'b', 'z': 'c'},
+    )
+
+
+def test_replace_keys_error():
+    replace = ReplaceKeys({'x': 'a'})
+    dicts = (
+        {'y': '2', 'z': '3'},
+        {'x': 'a', 'y': 'b', 'z': 'c'},
+    )
+    with pytest.raises(KeyError):
+        tuple(replace(dicts))
+
+
+def test_replace_keys_none():
+    replace = ReplaceKeys({'x': 'a'}, none=True)
+    dicts = (
+        {'y': '2', 'z': '3'},
+        {'x': 'a', 'y': 'b', 'z': 'c'},
+    )
+    assert tuple(replace(dicts)) == (
+        {'a': None, 'y': '2', 'z': '3'},
+        {'a': 'a', 'y': 'b', 'z': 'c'},
     )

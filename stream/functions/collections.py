@@ -110,3 +110,57 @@ class SelectKeys(_BaseOneToOneFunction[_typing.Mapping, _typing.Dict]):
     def each(self, item: _typing.Sequence) -> _typing.Dict:
         for get_item in self.__get_items:  # type: GetItem
             yield get_item.index, get_item.each(item)
+
+
+class ApplyOnKeys(_BaseOneToOneFunction[_typing.Dict, _typing.Dict]):
+    def __init__(
+            self,
+            func,
+            *keys,
+            copy: bool = False,
+            none: bool = False,
+    ):
+        self.__func = func
+        self.__keys = keys
+        self.__copy = copy
+        self.__none = none
+
+    def each(self, item: _typing.Dict) -> _typing.Dict:
+        if self.__copy:
+            item = item.copy()
+        keys = self.__keys or tuple(item)
+        for k in keys:
+            try:
+                item[k] = self.__func(item[k])
+            except Exception:
+                if self.__none:
+                    item[k] = None
+                else:
+                    raise
+        return item
+
+
+class ReplaceKeys(_BaseOneToOneFunction[_typing.Dict, _typing.Dict]):
+    def __init__(
+            self,
+            replace: _typing.Dict,
+            *,
+            copy: bool = False,
+            none: bool = False,
+    ):
+        self.__replace = replace
+        self.__copy = copy
+        self.__none = none
+
+    def each(self, item: _typing.Dict) -> _typing.Dict:
+        if self.__copy:
+            item = item.copy()
+        for k, v in self.__replace.items():
+            try:
+                item[v] = item.pop(k)
+            except KeyError:
+                if self.__none:
+                    item[v] = None
+                else:
+                    raise
+        return item
