@@ -28,7 +28,7 @@ class Csv(_BaseOneToOneFunction[str, CsvRow]):
         return next(_csv.reader([item], *self.__args, **self.__kwargs))
 
 
-class ToDict(_Function[_typing.Sequence, _typing.Dict]):
+class CsvToDict(_Function[_typing.Sequence, _typing.Dict]):
     """
     Use the first row as keys.
     """

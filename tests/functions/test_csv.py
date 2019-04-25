@@ -1,4 +1,4 @@
-from stream.functions.csv import Csv, ToDict
+from stream.functions.csv import Csv, CsvToDict
 
 
 def test_csv():
@@ -18,7 +18,7 @@ def test_delimiter():
 
 
 def test_to_dict():
-    to_dict = ToDict()
+    to_dict = CsvToDict()
     lines = (
         ['x', 'y'],
         ['1', '2'],
