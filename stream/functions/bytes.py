@@ -12,10 +12,10 @@ encode: _ApplyEach[str, bytes] = _ApplyEach(str.encode, encoding='utf-8')
 decode: _ApplyEach[bytes, str] = _ApplyEach(bytes.decode, encoding='utf-8')
 
 
-def un_gzip(iterable: _typing.Iterable[bytes]) -> _typing.Iterator[str]:
+def un_gzip(iterable: _typing.Iterable[bytes]) -> _typing.Iterator[bytes]:
     """
-    Unzip a gzip byte stream into str, and split by lines.
+    Unzip a gzip byte stream, and split by lines.
     """
     readable = _BytesIO(iterable)
-    with _gzip.open(readable) as f:
+    with _gzip.open(readable, mode='rb') as f:
         yield from f
