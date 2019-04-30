@@ -135,7 +135,7 @@ class FtpReadFile(BaseFtpFile):
             *,
             threaded: bool = False,
             tmpfile: bool = False,
-            blocksize=8192,
+            blocksize: int = 8192,
             rest=None,
             **kwargs,
     ):

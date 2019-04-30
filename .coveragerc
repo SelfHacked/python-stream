@@ -5,3 +5,5 @@ omit =
     stream/io/s3.py
     # ftp
     stream/io/ftp.py
+    # http
+    stream/io/http.py
