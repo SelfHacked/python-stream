@@ -21,6 +21,14 @@ class File(_typing.IO[_typing.AnyStr]):
             raise self.NotSupported
         return _IterStream(self)
 
+    @classmethod
+    def stream_safe(cls, *args, **kwargs) -> _Stream[_typing.AnyStr]:
+        def __iter() -> _typing.Iterator[_typing.AnyStr]:
+            with cls(*args, **kwargs) as f:
+                yield from f.stream
+
+        return _IterStream(__iter())
+
     def input(self, lines: _typing.Iterable[_typing.AnyStr]) -> None:
         """
         Write a sequence of lines.
