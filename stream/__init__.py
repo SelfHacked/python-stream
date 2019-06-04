@@ -18,7 +18,11 @@ class Stream(_typing.Iterator[_T_co]):
         Override the `|` operator.
         :param other: An iterator function, see `functional` package.
         """
-        return IterStream(other(self))
+        result = other(self)
+        if isinstance(result, Stream):
+            return result
+        else:
+            return IterStream(result)
 
     def __gt__(self, other: _Call[_T_co, _V]) -> _V:
         """
