@@ -58,6 +58,7 @@ setup(
     extras_require={
         'cached-property': extra_cached_property,
         's3': extra_s3,
+        'http': extra_http,
         'sqlalchemy': extra_sql,
 
         'bin': extra_bin,
