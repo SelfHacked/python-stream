@@ -126,11 +126,15 @@ def download_cmd():
 
 def get_cmd():
     import argparse
-    from stream.io.std import StdOut
+    from stream.io.std import StdOut, stderr
     parser = argparse.ArgumentParser()
     parser.add_argument('url', type=str)
     args = parser.parse_args()
 
     with HttpDownloadFile(args.url) as f:
         with StdOut() as stdout:
-            f.copy_to(stdout.buffer)
+            try:
+                f.copy_to(stdout.buffer)
+            except BrokenPipeError:
+                # avoid "exception ignored" message
+                stderr.close()

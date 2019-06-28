@@ -272,7 +272,7 @@ def download_cmd():
 
 def get_cmd():
     import argparse
-    from stream.io.std import StdOut
+    from stream.io.std import StdOut, stderr
     parser = argparse.ArgumentParser()
     parser.add_argument('url', type=str, nargs='?')
     parser.add_argument('--host', '-H', type=str)
@@ -290,4 +290,8 @@ def get_cmd():
             path,
     ) as f:
         with StdOut() as stdout:
-            f.dump_to_buffer(stdout.buffer)
+            try:
+                f.dump_to_buffer(stdout.buffer)
+            except BrokenPipeError:
+                # avoid "exception ignored" message
+                stderr.close()
