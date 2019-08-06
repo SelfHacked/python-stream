@@ -169,9 +169,6 @@ class S3ReadFile(BaseS3File):
         return super().read(n=n)
 
     def readline(self, limit: int = -1) -> bytes:
-        if self._lines:
-            return super().readline(limit=limit)
-
         try:
             self.__load_current_chunk()
         except StopIteration:
