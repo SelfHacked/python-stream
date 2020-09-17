@@ -76,10 +76,11 @@ from stream.io.s3 import S3ReadFile, S3WriteFile
 from stream.functions.bytes import encode, decode
 
 # Read from s3 file
-with S3ReadFile('dev-varuna', 'prs/trait1/ss1/data_head.tsv.gz', lines=False) as s3_file:
-    # uncompress
-    gzip_in = gzip.open(s3_file, 'rb')
-    
+with S3ReadFile(
+    'dev-varuna', 'prs/trait1/ss1/data_head.tsv.gz', lines=False,
+) as s3_file, gzip.open(
+    s3_file, 'rb',
+) as gzip_in:
     # decode
     decode_in = decode(gzip_in)
     
